@@ -34,7 +34,7 @@ Namespace VibeServer
             Dim str13 As String
             Dim str14 As String
             Dim EIC As Long
-            Console.WriteLine("Visual Basic Economy Server [Version 2.7]")
+            Console.WriteLine("Visual Basic Economy Server [Version 2.8]")
             Console.WriteLine("(c)2019 Igtampe, No Rights Reserved.")
             Console.WriteLine("")
 
@@ -44,43 +44,50 @@ Namespace VibeServer
             Console.WriteLine("")
             Console.WriteLine(String.Concat("[", Conversions.ToString(DateTime.Now), "] Starting Server"))
             If (File.Exists("Settings1.cfg")) Then
-                FileSystem.FileOpen(1, "Settings1.cfg", OpenMode.Input, OpenAccess.[Default], OpenShare.[Default], -1)
-                Dim str15 As String = FileSystem.LineInput(1).Replace("""", "")
+                FileOpen(1, "Settings1.cfg", OpenMode.Input, OpenAccess.[Default], OpenShare.[Default], -1)
+                Dim str15 As String = LineInput(1).Replace("""", "")
                 Dim strArrays As String() = str15.Split(New Char() {","c})
                 IP = strArrays(0)
                 UMSWEBDir = strArrays(1)
                 WEBDir = strArrays(2)
-                FileSystem.FileClose(New Integer() {1})
+                FileClose(New Integer() {1})
             Else
                 IP = "127.0.0.1"
                 UMSWEBDir = "A:\MARSH"
                 WEBDir = "A:\MARSH"
-                FileSystem.FileOpen(1, "Settings1.cfg", OpenMode.Output, OpenAccess.[Default], OpenShare.[Default], -1)
-                FileSystem.WriteLine(1, New Object() {IP, UMSWEBDir, WEBDir})
-                FileSystem.FileClose(New Integer() {1})
+                FileOpen(1, "Settings1.cfg", OpenMode.Output, OpenAccess.[Default], OpenShare.[Default], -1)
+                WriteLine(1, New Object() {IP, UMSWEBDir, WEBDir})
+                FileClose(New Integer() {1})
                 Console.WriteLine(String.Concat("[", Conversions.ToString(DateTime.Now), "] Could Not Find Settings.cfg in current directory, rendered default one"))
             End If
-            Dim tcpListener As System.Net.Sockets.TcpListener = New System.Net.Sockets.TcpListener(IPAddress.Parse(IP), 757)
-            Dim tcpClient As System.Net.Sockets.TcpClient = New System.Net.Sockets.TcpClient()
+            Dim tcpListener As TcpListener = New TcpListener(IPAddress.Parse(IP), 757)
+            Dim tcpClient As TcpClient = New TcpClient()
             tcpListener.Start()
             Console.WriteLine(String.Concat("[", Conversions.ToString(DateTime.Now), "] Server Started"))
             Dim ClientMSG As String = ""
             While CObj(ClientMSG) <> CObj("EXIT")
                 Console.WriteLine(String.Concat("[", Conversions.ToString(DateTime.Now), "] Waiting for connection..."))
-                Dim networkStream As System.Net.Sockets.NetworkStream = New System.Net.Sockets.NetworkStream(tcpListener.AcceptSocket())
-                Dim binaryWriter As System.IO.BinaryWriter = New System.IO.BinaryWriter(networkStream)
-                Dim binaryReader As System.IO.BinaryReader = New System.IO.BinaryReader(networkStream)
+                Dim networkStream As NetworkStream = New NetworkStream(tcpListener.AcceptSocket())
+                Dim binaryWriter As BinaryWriter = New BinaryWriter(networkStream)
+                Dim binaryReader As BinaryReader = New BinaryReader(networkStream)
                 Console.WriteLine(String.Concat("[", Conversions.ToString(DateTime.Now), "] Connected! Waiting for string..."))
-                ClientMSG = binaryReader.ReadString()
+
+                Try
+                    ClientMSG = binaryReader.ReadString().Trim()
+                Catch ex As Exception
+                    ToConsole("Could not read string for some reason.")
+                    GoTo Restart
+                End Try
+
                 Console.WriteLine(String.Concat(New String() {"[", Conversions.ToString(DateTime.Now), "] Received (", ClientMSG, ")"}))
-                If (Operators.CompareString(ClientMSG, "CONNECTED", False) = 0) Then
-                    Console.WriteLine(String.Concat("[", Conversions.ToString(DateTime.Now), "] Classic Packet, replied."))
+                If (ClientMSG = "CONNECTED") Then
+                    ToConsole("Classic Packet, replied.")
                     binaryWriter.Write("You've connected to the server! Congrats.")
-                ElseIf (Operators.CompareString(ClientMSG, "NUMBER", False) = 0) Then
-                    Console.WriteLine(String.Concat("[", Conversions.ToString(DateTime.Now), "] Classic Packet, replied."))
+                ElseIf (ClientMSG = "NUMBER") Then
+                    ToConsole("Classic Packet, replied.")
                     binaryWriter.Write("Random number generator was broken today")
-                ElseIf (Operators.CompareString(ClientMSG, "FACT", False) = 0) Then
-                    Console.WriteLine(String.Concat("[", Conversions.ToString(DateTime.Now), "] Classic Packet, replied."))
+                ElseIf (ClientMSG = "FACT") Then
+                    ToConsole("Classic Packet, replied.")
                     binaryWriter.Write("AAAAAAAAAAAAAAAAA")
                 ElseIf (ClientMSG.StartsWith("CU")) Then
                     Dim str17 As String = ClientMSG.Remove(0, 2)
@@ -92,7 +99,7 @@ Namespace VibeServer
                         binaryWriter.Write("1")
                         Console.WriteLine(String.Concat("[", Conversions.ToString(DateTime.Now), "] Improperly Coded Check User Request"))
                         ProjectData.ClearProjectError()
-                        GoTo Label0
+                        GoTo Restart
                     End Try
                     Console.WriteLine(String.Concat(New String() {"[", Conversions.ToString(DateTime.Now), "] Checking User (", str2, ") with pin (", str3, "), (", str17, ")"}))
                     If (File.Exists(String.Concat(UMSWEBDir, "\SSH\USERS\", str2, "\pin.dll"))) Then
@@ -123,7 +130,7 @@ Namespace VibeServer
                         binaryWriter.Write("1")
                         Console.WriteLine(String.Concat("[", Conversions.ToString(DateTime.Now), "] Improperly Coded Vibing request"))
                         ProjectData.ClearProjectError()
-                        GoTo Label0
+                        GoTo Restart
                     End Try
                     Console.WriteLine(String.Concat(New String() {"[", Conversions.ToString(DateTime.Now), "] Transfering (", Conversions.ToString(num), ") from (", str4, ") to (", str5, ")"}))
                     Try
@@ -185,7 +192,7 @@ Namespace VibeServer
                         binaryWriter.Write("E")
                         Console.WriteLine(String.Concat("[", Conversions.ToString(DateTime.Now), "] Couldnt Finish Money Transfer."))
                         ProjectData.ClearProjectError()
-                        GoTo Label0
+                        GoTo Restart
                     End Try
                     binaryWriter.Write("S")
 
@@ -216,7 +223,7 @@ Namespace VibeServer
                         binaryWriter.Write("1")
                         Console.WriteLine(String.Concat("[", Conversions.ToString(DateTime.Now), "] Improperly Coded Transfer request. Stuck on Stage ", Conversions.ToString(num4)))
                         ProjectData.ClearProjectError()
-                        GoTo Label0
+                        GoTo Restart
                     End Try
                     Console.WriteLine(String.Concat(New String() {"[", Conversions.ToString(DateTime.Now), "] Transfering (", Conversions.ToString(num1), ") from (", str7, ") to (", str8, ") of (", str6, ")"}))
                     Try
@@ -258,7 +265,7 @@ Namespace VibeServer
                         binaryWriter.Write("E")
                         Console.WriteLine(String.Concat("[", Conversions.ToString(DateTime.Now), "] Couldnt Finish Money Transfer. Stuck on Stage " & num4.ToString))
                         ProjectData.ClearProjectError()
-                        GoTo Label0
+                        GoTo Restart
                     End Try
                     binaryWriter.Write("S")
                 ElseIf (ClientMSG.StartsWith("CP")) Then
@@ -271,18 +278,18 @@ Namespace VibeServer
                         binaryWriter.Write("1")
                         Console.WriteLine(String.Concat("[", Conversions.ToString(DateTime.Now), "] Improperly Coded Check User Request"))
                         ProjectData.ClearProjectError()
-                        GoTo Label0
+                        GoTo Restart
                     End Try
                     Try
-                        FileSystem.FileOpen(1, String.Concat(UMSWEBDir, "\SSH\USERS\", str9, "\PIN.dll"), OpenMode.Output, OpenAccess.[Default], OpenShare.[Default], -1)
+                        FileOpen(1, String.Concat(UMSWEBDir, "\SSH\USERS\", str9, "\PIN.dll"), OpenMode.Output, OpenAccess.[Default], OpenShare.[Default], -1)
                         FileSystem.WriteLine(1, New Object() {[integer]})
-                        FileSystem.FileClose(New Integer() {1})
+                        FileClose(New Integer() {1})
                     Catch exception6 As System.Exception
                         ProjectData.SetProjectError(exception6)
                         binaryWriter.Write("2")
                         Console.WriteLine(String.Concat("[", Conversions.ToString(DateTime.Now), "] Could not complete pin change"))
                         ProjectData.ClearProjectError()
-                        GoTo Label0
+                        GoTo Restart
                     End Try
                     Console.WriteLine(String.Concat(New String() {"[", Conversions.ToString(DateTime.Now), "] Changing Pin of (", str9, ") with (", Conversions.ToString([integer]), "), (", str21, ")"}))
                     binaryWriter.Write("S")
@@ -294,7 +301,7 @@ Namespace VibeServer
                         binaryWriter.Write("E")
                         Console.WriteLine(String.Concat(New String() {"[", Conversions.ToString(DateTime.Now), "] Improperly Coded Check User Request (", str10, ")"}))
                         ProjectData.ClearProjectError()
-                        GoTo Label0
+                        GoTo Restart
                     End Try
                     Dim str22 As String = Conversions.ToString(0)
                     Dim str23 As String = Conversions.ToString(0)
@@ -441,7 +448,7 @@ notifskipwhile:
                         Console.WriteLine(String.Concat("[", Conversions.ToString(DateTime.Now), "] Unwilling to find balance of UMSNB"))
                         binaryWriter.Write("E")
                         ProjectData.ClearProjectError()
-                        GoTo Label0
+                        GoTo Restart
                     End Try
                     Console.WriteLine(String.Concat("[", Conversions.ToString(DateTime.Now), "] Sending UMSNB Balance"))
                     binaryWriter.Write(str11)
@@ -456,7 +463,7 @@ notifskipwhile:
                         Console.WriteLine(String.Concat("[", Conversions.ToString(DateTime.Now), "] Unwilling to find balance of GBANK"))
                         binaryWriter.Write("E")
                         ProjectData.ClearProjectError()
-                        GoTo Label0
+                        GoTo Restart
                     End Try
                     Console.WriteLine(String.Concat("[", Conversions.ToString(DateTime.Now), "] Sending GBANK Balance"))
                     binaryWriter.Write(str12)
@@ -472,7 +479,7 @@ notifskipwhile:
                         Console.WriteLine(String.Concat("[", Conversions.ToString(DateTime.Now), "] Unwilling to find balance of RIVER"))
                         binaryWriter.Write("E")
                         ProjectData.ClearProjectError()
-                        GoTo Label0
+                        GoTo Restart
                     End Try
                     Console.WriteLine(String.Concat("[", Conversions.ToString(DateTime.Now), "] Sending RIVER Balance"))
                     binaryWriter.Write(str13)
@@ -630,12 +637,12 @@ RedoIDGEN:
 
 
                         binaryWriter.Write(regid)
-                        GoTo Label0
+                        GoTo Restart
 
                     Catch
                         ToConsole("Shoot I couldn't do that.")
                         binaryWriter.Write("E")
-                        GoTo Label0
+                        GoTo Restart
                     End Try
 
 
@@ -648,7 +655,7 @@ RedoIDGEN:
                     If Not BNKMSG.Count = 11 Then
                         ToConsole("Something seems fishy, I'm not going to do it.")
                         binaryWriter.Write("E")
-                        GoTo Label0
+                        GoTo Restart
                     End If                    'A57174GBANK
                     Dim BNKACT As String = BNKMSG.Remove(1, BNKMSG.Count - 1)
                     'A
@@ -670,19 +677,19 @@ RedoIDGEN:
                                 If Not BNKBAL = "0" Then
                                     ToConsole("Looks to me like it's not 0. Stopping.")
                                     binaryWriter.Write("E")
-                                    GoTo Label0
+                                    GoTo Restart
                                 End If
 
                                 ToConsole("Deleting Folder")
                                 Directory.Delete(UMSWEBDir & "\SSH\USERS\" & BNKID & "\" & BNKBNK, True)
                                 ToConsole("KK Done!")
                                 binaryWriter.Write("S")
-                                GoTo Label0
+                                GoTo Restart
 
                             Catch
                                 ToConsole("Shoot I couldn't do that.")
                                 binaryWriter.Write("E")
-                                GoTo Label0
+                                GoTo Restart
                             End Try
 
 
@@ -702,12 +709,12 @@ RedoIDGEN:
                                 PrintLine(1, "[" & DateTime.Now.ToString & "] Account Created on ViBE")
                                 FileClose(1)
                                 binaryWriter.Write("S")
-                                GoTo Label0
+                                GoTo Restart
 
                             Catch
                                 ToConsole("Shoot I couldn't do that.")
                                 binaryWriter.Write("E")
-                                GoTo Label0
+                                GoTo Restart
                             End Try
 
                             'open
@@ -717,18 +724,18 @@ RedoIDGEN:
                                 File.Copy(UMSWEBDir & "\SSH\USERS\" & BNKID & "\" & BNKBNK & "\Log.log", WEBDir & "\LOGS\" & BNKID & BNKBNK & ".log", True)
                                 ToConsole("Done!")
                                 binaryWriter.Write("S")
-                                GoTo Label0
+                                GoTo Restart
                             Catch ex As Exception
                                 ToConsole("Shoot I couldn't do that.")
                                 binaryWriter.Write("E")
-                                GoTo Label0
+                                GoTo Restart
                             End Try
 
                             'Log
 
                         Case Else
                             binaryWriter.Write("E")
-                            GoTo Label0
+                            GoTo Restart
                     End Select
 
                 ElseIf ClientMSG.StartsWith("CERT") Then
@@ -739,7 +746,7 @@ RedoIDGEN:
                         FileClose(1)
                         binaryWriter.Write("S")
 
-                        GoTo Label0
+                        GoTo Restart
                     Catch
                         binaryWriter.Write("E")
 
@@ -875,7 +882,7 @@ Chckskipwhile:
                     If Not Directory.Exists(UMSWEBDir & "\SSH\USERS\" & NTAUSR) Then
                         binaryWriter.Write("E")
                         ToConsole("Unable to find user " & NTAUSR)
-                        GoTo Label0
+                        GoTo Restart
                     End If
                     Dim NTABNK As String = "LEMON"
                     If Directory.Exists(UMSWEBDir & "\SSH\USERS\" & NTAUSR & "\UMSNB") Then
@@ -887,7 +894,7 @@ Chckskipwhile:
                     Else
                         binaryWriter.Write("E")
                         ToConsole("User " & NTAUSR & " Has no bank accounts!")
-                        GoTo Label0
+                        GoTo Restart
                     End If
 
                     Try
@@ -915,7 +922,7 @@ Chckskipwhile:
                     Catch ex As Exception
                         binaryWriter.Write("E")
                         ToConsole("Something went wrong" & vbNewLine & vbNewLine * ex.ToString)
-                        GoTo Label0
+                        GoTo Restart
                     End Try
 
                 ElseIf ClientMSG.StartsWith("EZT") Then
@@ -962,7 +969,7 @@ Chckskipwhile:
                         End Try
 
 
-                        GoTo Label0
+                        GoTo Restart
 
                     ElseIf EZTAXMSG.StartsWith("UPD") Then
                         EZTAXMSG = EZTAXMSG.Remove(0, 3)
@@ -1022,7 +1029,7 @@ Chckskipwhile:
                             If Not File.Exists(UMSWEBDir & "\SSH\CONTRACTS\" & Details & ".txt") Then
                                 binaryWriter.Write("E")
                                 ToConsole("Looks like it doesn't exist")
-                                GoTo Label0
+                                GoTo Restart
                             End If
 
                             Try
@@ -1081,7 +1088,7 @@ Chckskipwhile:
                             FileClose(1)
                             ToConsole("OK Done")
                             binaryWriter.Write("S")
-                            GoTo Label0
+                            GoTo Restart
 
                         ElseIf ConMSG.StartsWith("ADDBID") Then
                             Dim ConMSGSplit() As String
@@ -1244,9 +1251,10 @@ Chckskipwhile:
                     End Try
 
                 Else
+                    ToConsole("Invalid Packet Sent")
                     binaryWriter.Write("invalid Packet Sent")
                 End If
-Label0:
+Restart:
             End While
         End Sub
 
