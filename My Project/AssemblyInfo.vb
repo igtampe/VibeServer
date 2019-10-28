@@ -1,6 +1,20 @@
-﻿Imports System
+﻿Imports System.Resources
+Imports System
 Imports System.Reflection
 Imports System.Runtime.InteropServices
+
+<Assembly: AssemblyTitle("ViBE Server")>
+<Assembly: AssemblyDescription("The Visual Basic Economy Server")>
+<Assembly: AssemblyCompany("Igtampe Development Inc")>
+<Assembly: AssemblyCopyright("(C)2019 Igtampe, No Rights Reserved")>
+<Assembly: AssemblyVersion("3.0.0.0")>
+<Assembly: NeutralResourcesLanguage("en")>
+
+
+
+
+
+
 
 ' General Information about an assembly is controlled through the following 
 ' set of attributes. Change these attribute values to modify the information
