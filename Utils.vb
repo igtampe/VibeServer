@@ -73,4 +73,14 @@ Public Class Utils
         Console.BackgroundColor = BG
     End Sub
 
+    ''' <summary>
+    ''' Returns the address of the file in a User's Directory
+    ''' </summary>
+    ''' <param name="ID"></param>
+    ''' <param name="File"></param>
+    ''' <returns></returns>
+    Public Shared Function UserFile(ID As String, File As String)
+        Return UMSWEBDir & "\SSH\USERS\" & ID & "\" & File
+    End Function
+
 End Class

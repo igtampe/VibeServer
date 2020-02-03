@@ -25,9 +25,8 @@ Public Class Core
         End Try
 
         ToConsole("Checking User (" & CUUser & ") with pin (" & CUPin & "), (" & CUCommand & ")")
-
-        If File.Exists(UMSWEBDir & "\SSH\USERS\" & CUUser & "\pin.dll") Then
-            Dim PinReadout As String = ReadFromFile(UMSWEBDir & "\SSH\USERS\" & CUUser & "\pin.dll")
+        If File.Exists(UserFile(CUUser, "pin.dll")) Then
+            Dim PinReadout As String = ReadFromFile(UserFile(CUUser, "pin.dll"))
             If PinReadout = CUPin Then
                 ToConsole("Pin is correct! User has logged in.")
                 Return 3
@@ -66,28 +65,28 @@ Public Class Core
 
         Try
             'Get Origin Balance
-            Dim OriginBalance As Long = ReadFromFile(UMSWEBDir & "\SSH\USERS\" & Origin & "\Balance.dll")
+            Dim OriginBalance As Long = ReadFromFile(UserFile(Origin, "Balance.dll"))
 
             'Get Destination Balance
-            Dim DestinationBalance As Long = ReadFromFile(UMSWEBDir & "\SSH\USERS\" & Destination & "\Balance.dll")
+            Dim DestinationBalance As Long = ReadFromFile(UserFile(Destination, "Balance.dll"))
 
             'Commit the Operation
             OriginBalance -= AmmountToSend
             DestinationBalance += AmmountToSend
 
             'Save Origin balance
-            ToFile(UMSWEBDir & "\SSH\USERS\" & Origin & "\balance.dll", OriginBalance)
+            ToFile(UserFile(Origin, "Balance.dll"), OriginBalance)
 
             'Save Destination Balance
-            ToFile(UMSWEBDir & "\SSH\USERS\" & Destination & "\balance.dll", DestinationBalance)
+            ToFile(UserFile(Destination, "Balance.dll"), DestinationBalance)
 
             'Extra Income Declaration
             Dim DestinationID = Destination.Remove(5, 6)
             Dim ExtraIncome As Long
 
             'Get Extra Income
-            If File.Exists(UMSWEBDir & "\SSH\USERS\" & DestinationID & "\EI.dll") Then
-                ExtraIncome = ReadFromFile(UMSWEBDir & "\SSH\USERS\" & DestinationID & "\EI.dll")
+            If File.Exists(UserFile(DestinationID, "EI.dll")) Then
+                ExtraIncome = ReadFromFile(UserFile(DestinationID, "EI.dll"))
             Else
                 ExtraIncome = 0
             End If
@@ -98,19 +97,19 @@ Public Class Core
 
             'Save the Exctra Income
             ToConsole("Added, opening the file again.")
-            ToFile(UMSWEBDir & "\SSH\USERS\" & DestinationID & "\EI.dll", ExtraIncome)
+            ToFile(UserFile(DestinationID, "EI.dll"), ExtraIncome)
 
             'Write Log 1
             ToConsole("Added it, writing to log1")
-            AddToFile(UMSWEBDir & "\SSH\users\" & Origin & "\log.log", "[" & DateTime.Now & "] You ~vibed~ " & AmmountToSend.ToString("N0") & "p to " & UserIDToLabel(Destination))
+            AddToFile(UserFile(Origin, "Log.Log"), "[" & DateTime.Now & "] You ~vibed~ " & AmmountToSend.ToString("N0") & "p to " & UserIDToLabel(Destination))
 
             'Write Log 2
             ToConsole("Writing log2")
-            AddToFile(UMSWEBDir & "\SSH\users\" & Destination & "\log.log", "[" & DateTime.Now & "] " & UserIDToLabel(Origin) & " ~vibed~ " & AmmountToSend.ToString("N0") & "p to you.")
+            AddToFile(UserFile(Destination, "Log.Log"), "[" & DateTime.Now & "] " & UserIDToLabel(Origin) & " ~vibed~ " & AmmountToSend.ToString("N0") & "p to you.")
 
             'Write Notif
             ToConsole("Writing to Notif")
-            AddToFile(UMSWEBDir & "\SSH\Users\" & DestinationID & "\notifs.txt", DateTime.Now.ToString & "`" & UserIDToLabel(Origin) & " Sent " & AmmountToSend.ToString("N0") & "p to your " & Destination.Remove(0, 6) & " account")
+            AddToFile(UserFile(DestinationID, "notifs.txt"), DateTime.Now.ToString & "`" & UserIDToLabel(Origin) & " Sent " & AmmountToSend.ToString("N0") & "p to your " & Destination.Remove(0, 6) & " account")
         Catch E2 As Exception
             ErrorToConsole("Couldnt Finish Money Transfer.", E2)
             Return "E"
@@ -192,7 +191,7 @@ Public Class Core
         ToConsole("Changing Pin of " & GetUsername(UserID) & " (" & UserID & ") with (" & NewPin & "), (" & ChangePinCommand & ")")
 
         Try
-            ToFile(UMSWEBDir & "\SSH\USERS\" & UserID & "\PIN.dll", NewPin)
+            ToFile(UserFile(UserID, "Pin.DLL"), NewPin)
         Catch E6 As Exception
             ErrorToConsole("Could not complete pin change", E6)
             Return 2

@@ -18,7 +18,7 @@ Public Module Main
 
     Public Sub Main()
         Color(ConsoleColor.White)
-        Console.WriteLine("Visual Basic Economy Server [Version 3.0]")
+        Console.WriteLine("Visual Basic Economy Server [Version 4.0]")
         Console.WriteLine("(c)2019 Igtampe, No Rights Reserved.")
         Color(ConsoleColor.Gray)
         Console.WriteLine("")

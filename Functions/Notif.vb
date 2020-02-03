@@ -38,14 +38,14 @@ Public Class Notif
     ''' <param name="NotifMSG"></param>
     ''' <returns></returns>
     Private Shared Function ReadNotifs(NotifMSG As String) As String
-        Dim notifarray() As String
+        Dim notifarray() As String = "".Split(",")
         ToConsole("trying to READ from " & NotifMSG & "'s messages")
 
-        If Not File.Exists(UMSWEBDir & "\SSH\USERS\" & NotifMSG & "\notifs.txt") Then
+        If Not File.Exists(UserFile(NotifMSG, "notifs.txt")) Then
             Return "N"
         End If
 
-        FileOpen(1, UMSWEBDir & "\SSH\USERS\" & NotifMSG & "\notifs.txt", OpenMode.Input)
+        FileOpen(1, UserFile(NotifMSG, "notifs.txt"), OpenMode.Input)
 
         Dim I As Integer = 0
 
@@ -69,7 +69,7 @@ Public Class Notif
     Private Shared Function ClearNotifs(Notifuser As String) As String
         ToConsole("Attempting to remove all of " & Notifuser & "'s notifications")
         Try
-            File.Delete(String.Concat(UMSWEBDir, "\SSH\USERS\", Notifuser, "\notifs.txt"))
+            File.Delete(UserFile(Notifuser, "notifs.txt"))
             ToConsole("OK I did it yay")
             Return "S"
         Catch ex As exception
@@ -88,14 +88,14 @@ Public Class Notif
         Dim notifindex As String = NotifMSG.Remove(0, 5)
         Dim notifuser As String = NotifMSG.Remove(5, notifindex.Length)
 
-        If Not File.Exists(String.Concat(UMSWEBDir, "\SSH\USERS\", notifuser, "\notifs.txt")) Then
+        If Not File.Exists(UserFile(notifuser, "notifs.txt")) Then
             Return "N"
         End If
 
         ToConsole("Trying to remove index " & notifindex & " from " & notifuser & "'s notification file")
 
-        FileOpen(1, String.Concat(UMSWEBDir, "\SSH\USERS\", notifuser, "\notifs.txt"), OpenMode.Input)
-        FileOpen(2, String.Concat(UMSWEBDir, "\SSH\USERS\", notifuser, "\tempnotifs.txt"), OpenMode.Output)
+        FileOpen(1, UserFile(notifuser, "notifs.txt"), OpenMode.Input)
+        FileOpen(2, UserFile(notifuser, "tempnotifs.txt"), OpenMode.Output)
 
         Dim I As Integer = 0
 
@@ -114,8 +114,8 @@ notifskipwhile:
         ToConsole("finishing up")
 
 
-        File.Delete(String.Concat(UMSWEBDir, "\SSH\USERS\", notifuser, "\notifs.txt"))
-        File.Move(String.Concat(UMSWEBDir, "\SSH\USERS\", notifuser, "\tempnotifs.txt"), String.Concat(UMSWEBDir, "\SSH\USERS\", notifuser, "\notifs.txt"))
+        File.Delete(UserFile(notifuser, "notifs.txt"))
+        File.Move(UserFile(notifuser, "tempnotifs.txt"), UserFile(notifuser, "notifs.txt"))
         Return "S"
 
     End Function

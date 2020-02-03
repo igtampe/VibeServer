@@ -72,7 +72,7 @@ Public Class Checkbook
     ''' <summary>
     ''' Removes a specified Check
     ''' </summary>
-    ''' <param name="CHKMSG"></param>
+    ''' <param name="CHCKMSG"></param>
     ''' <returns></returns>
     Private Shared Function RemoCheck(CHCKMSG As String) As String
         '5717410
@@ -127,13 +127,13 @@ Chckskipwhile:
             ToConsole("Writing to Checkbook")
 
             Select Case chckdetails(0)
-                Case 0
+                Case "0"
                     FileOpen(1, String.Concat(UMSWEBDir, "\SSH\users\", Chckuser, "\notifs.txt"), OpenMode.Append)
                     '0`12/4/2018 7:42:42 PM`A Test Account`57174\UMSNB`100`This is a Check
                     PrintLine(1, DateTime.Now.ToString & "`You have a new check from " & chckdetails(2) & " that's worth " & CInt(chckdetails(4)).ToString("N0") & "p")
                     FileClose(1)
 
-                Case 1
+                Case "1"
                     FileOpen(1, String.Concat(UMSWEBDir, "\SSH\users\", Chckuser, "\notifs.txt"), OpenMode.Append)
                     '1`12/4/2018 7:42:42 PM`A Test Account`57174\UMSNB`100`This is a Bill
                     PrintLine(1, DateTime.Now.ToString & "`You have a new bill from " & chckdetails(2) & " that's worth " & CInt(chckdetails(4)).ToString("N0") & "p")
@@ -148,6 +148,11 @@ Chckskipwhile:
             ToConsole("OK done")
         Catch ex As Exception
             ErrorToConsole("Something Happened", ex)
+            Try
+                FileClose(1)
+            Catch
+
+            End Try
             Return "E"
         End Try
 
