@@ -96,6 +96,7 @@ Public Class EzTax
 
 
         If SplitIncome.Count = 1 Then
+            ToConsole("Breakdown not received, updating only classically")
             Return UpdateIncomeClassic(EZTAXMSG)
         End If
 

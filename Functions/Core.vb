@@ -255,7 +255,7 @@ Public Class Core
     Public Shared Function GetDirectory() As String
         Dim NumberOfUsers As Integer = 1
         Dim TempReadString As String
-        Dim directoryarray() As String
+        Dim directoryarray(0) As String
 
         ToConsole("Opening Regular Accounts")
         FileOpen(1, String.Concat(UMSWEBDir, "\SSH\INCOMEMAN\UserList.isf"), OpenMode.Input)
@@ -268,7 +268,7 @@ Public Class Core
 
                 ToConsole("Found USER " & NumberOfUsers & " with ID and name " & directoryarray(NumberOfUsers - 1))
 
-                NumberOfUsers = NumberOfUsers + 1
+                NumberOfUsers += 1
 
             End If
         End While
@@ -285,9 +285,9 @@ Public Class Core
                 directoryarray(NumberOfUsers - 1) = directoryarray(NumberOfUsers - 1) & ": " & GetUsername(directoryarray(NumberOfUsers - 1))
 
                 ToConsole("Found USER " & NTNum & " with ID and name " & directoryarray(NumberOfUsers - 1))
-                NTNum = NTNum + 1
+                NTNum += 1
 
-                NumberOfUsers = NumberOfUsers + 1
+                NumberOfUsers += 1
 
             End If
         End While
@@ -306,9 +306,9 @@ Public Class Core
                 directoryarray(NumberOfUsers - 1) = directoryarray(NumberOfUsers - 1) & ": " & GetUsername(directoryarray(NumberOfUsers - 1))
 
                 ToConsole("Found USER " & NTNum & " with ID and name " & directoryarray(NumberOfUsers - 1))
-                NTNum = NTNum + 1
+                NTNum += 1
 
-                NumberOfUsers = NumberOfUsers + 1
+                NumberOfUsers += 1
 
             End If
         End While
@@ -345,11 +345,11 @@ Public Class Core
 
 RedoIDGEN:
             regid = ""
-            regid = regid & CInt(Math.Ceiling(Rnd() * 9))
-            regid = regid & CInt(Math.Ceiling(Rnd() * 9))
-            regid = regid & CInt(Math.Ceiling(Rnd() * 9))
-            regid = regid & CInt(Math.Ceiling(Rnd() * 9))
-            regid = regid & CInt(Math.Ceiling(Rnd() * 9))
+            regid &= CInt(Math.Ceiling(Rnd() * 9))
+            regid &= CInt(Math.Ceiling(Rnd() * 9))
+            regid &= CInt(Math.Ceiling(Rnd() * 9))
+            regid &= CInt(Math.Ceiling(Rnd() * 9))
+            regid &= CInt(Math.Ceiling(Rnd() * 9))
 
             ToConsole("Got ID (" & regid & ") Checking if it exists...")
             If Directory.Exists(UMSWEBDir & "\SSH\USERS\" & regid) Then GoTo RedoIDGEN
@@ -372,7 +372,7 @@ RedoIDGEN:
                 While Not EOF(1)
                     str14 = LineInput(1)
                     If (str14.StartsWith("USER")) Then
-                        N = N + 1
+                        N += 1
                         ToConsole("Found record (" & N & ") which is (" & str14 & ")")
                     End If
                 End While
@@ -389,7 +389,7 @@ RedoIDGEN:
                 While Not EOF(1)
                     str14 = LineInput(1)
                     If (str14.StartsWith("USER")) Then
-                        N = N + 1
+                        N += 1
                         ToConsole("Found record (" & N & ") which is (" & str14 & ")")
                     End If
                 End While
@@ -458,7 +458,7 @@ RedoIDGEN:
             FileOpen(1, UMSWEBDir & "\SSH\USERS\" & NTAUSR & "\" & NTABNK & "\Balance.dll", OpenMode.Input)
             Dim NTCB As Long = Conversions.ToLong(LineInput(1))
             FileClose(1)
-            NTCB = NTCB + NTAAMT
+            NTCB += NTAAMT
 
 
             FileOpen(1, UMSWEBDir & "\SSH\USERS\" & NTAUSR & "\" & NTABNK & "\Balance.dll", OpenMode.Output)

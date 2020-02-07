@@ -51,7 +51,7 @@ Public Module Main
         ToConsole("Server Started!")
         Color(ConsoleColor.Gray)
 
-        Dim ClientMSG As String = ""
+        Dim ClientMSG As String
 
 
         While True

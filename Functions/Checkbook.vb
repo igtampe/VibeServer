@@ -57,7 +57,7 @@ Public Class Checkbook
             ReDim Preserve notifarray(I)
             notifarray(I) = LineInput(1)
             ToConsole("Found Check " & I)
-            I = I + 1
+            I += 1
         End While
 
         FileClose(1)
@@ -95,7 +95,7 @@ Public Class Checkbook
             ToConsole("Copying Index " & I)
             PrintLine(2, LineInput(1))
 Chckskipwhile:
-            I = I + 1
+            I += 1
         End While
         FileClose(1)
         FileClose(2)

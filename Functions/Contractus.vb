@@ -60,7 +60,7 @@ Public Class Contractus
     ''' </summary>
     ''' <returns></returns>
     Private Shared Function ReadAllContracts() As String
-        Dim AllContracts() As String
+        Dim AllContracts(0) As String
         ToConsole("trying to read all contracts")
         If Not File.Exists(String.Concat(UMSWEBDir, "\SSH\Contracts.txt")) Then
             Return "N"
@@ -72,7 +72,7 @@ Public Class Contractus
             ReDim Preserve AllContracts(I)
             AllContracts(I) = LineInput(1)
             ToConsole("Found Contract " & I)
-            I = I + 1
+            I += 1
         End While
         FileClose(1)
         If I = 0 Then
@@ -109,7 +109,7 @@ Public Class Contractus
     ''' <param name="Notifmsg"></param>
     ''' <returns></returns>
     Private Shared Function ReadUserContracts(Notifmsg As String) As String
-        Dim notifarray() As String
+        Dim notifarray(0) As String
         ToConsole("trying to READ from " & Notifmsg & "'s Contracts")
         If Not File.Exists(String.Concat(UMSWEBDir, "\SSH\USERS\", Notifmsg, "\Contracts.txt")) Then
             Return "N"
@@ -121,7 +121,7 @@ Public Class Contractus
             ReDim Preserve notifarray(I)
             notifarray(I) = LineInput(1)
             ToConsole("Found Contract " & I)
-            I = I + 1
+            I += 1
         End While
 
         FileClose(1)
@@ -146,7 +146,7 @@ Public Class Contractus
         ContractID = 0
 
         While (File.Exists(UMSWEBDir & "\SSH\Contracts\" & ContractID & ".txt"))
-            ContractID = ContractID + 1
+            ContractID += 1
         End While
 
         ToConsole("This contract will be Contract #" & ContractID)
@@ -238,7 +238,7 @@ Public Class Contractus
         FileOpen(1, String.Concat(UMSWEBDir, "\SSH\Contracts.txt"), OpenMode.Input)
         FileOpen(2, String.Concat(UMSWEBDir, "\SSH\TempContracts.txt"), OpenMode.Output)
         Dim CurrentLine() As String
-        Dim TransferedContract() As String
+        Dim TransferedContract(0) As String
         Dim woops As Boolean = True
         While Not EOF(1)
             CurrentLine = LineInput(1).Split("~")

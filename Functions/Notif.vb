@@ -53,7 +53,7 @@ Public Class Notif
             ReDim Preserve notifarray(I)
             notifarray(I) = LineInput(1)
             ToConsole("Found Notif " & I)
-            I = I + 1
+            I += 1
         End While
 
         FileClose(1)
@@ -107,7 +107,7 @@ Public Class Notif
             ToConsole("Copying Index " & I)
             PrintLine(2, LineInput(1))
 notifskipwhile:
-            I = I + 1
+            I += 1
         End While
         FileClose(1)
         FileClose(2)
