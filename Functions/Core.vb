@@ -442,7 +442,7 @@ RedoIDGEN:
             ToConsole("Unable to find user " & NTAUSR)
         End If
 
-        Dim NTABNK As String = "LEMON"
+        Dim NTABNK As String
         If Directory.Exists(UMSWEBDir & "\SSH\USERS\" & NTAUSR & "\UMSNB") Then
             NTABNK = "UMSNB"
         ElseIf Directory.Exists(UMSWEBDir & "\SSH\USERS\" & NTAUSR & "\GBANK") Then
