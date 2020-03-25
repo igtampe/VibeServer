@@ -1,4 +1,7 @@
-﻿''' <summary>
+﻿Imports BasicRender
+Imports Header
+
+''' <summary>
 ''' General Utilities for the ViBE Server
 ''' </summary>
 Public Class Utils
@@ -8,7 +11,9 @@ Public Class Utils
     ''' </summary>
     ''' <param name="ConsoleMSG"></param>
     Public Shared Sub ToConsole(ByVal ConsoleMSG As String)
+        SetPos(0, 29)
         Console.WriteLine("[" & DateTime.Now.ToString & "] " & ConsoleMSG)
+        AddToFile("ViBEServer.log", "[" & DateTime.Now.ToString & "] " & ConsoleMSG)
     End Sub
 
     ''' <summary>
@@ -17,6 +22,7 @@ Public Class Utils
     ''' <param name="ConsoleMSG">Message</param>
     ''' <param name="Ex">Exception</param>
     Public Shared Sub ErrorToConsole(ByVal ConsoleMSG As String, Ex As Exception)
+        SetPos(0, 29)
         Console.ForegroundColor = ConsoleColor.Red
         Console.WriteLine("-------------------------------------------------------------------------------")
         Console.ForegroundColor = ConsoleColor.Black
@@ -62,16 +68,6 @@ Public Class Utils
         FileClose(50)
         Return TheReturn
     End Function
-
-    ''' <summary>
-    ''' Sets the color of the console
-    ''' </summary>
-    ''' <param name="FG"></param>
-    ''' <param name="BG"></param>
-    Public Shared Sub Color(FG As ConsoleColor, Optional BG As ConsoleColor = ConsoleColor.Black)
-        Console.ForegroundColor = FG
-        Console.BackgroundColor = BG
-    End Sub
 
     ''' <summary>
     ''' Returns the address of the file in a User's Directory

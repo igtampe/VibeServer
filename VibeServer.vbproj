@@ -69,7 +69,8 @@
       <AutoGen>false</AutoGen>
       <DesignTimeSharedInput>false</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Utils.vb" />
+    <Compile Include="Utilities\BasicRender.vb" />
+    <Compile Include="Utilities\Utils.vb" />
     <EmbeddedResource Include="Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.vb</LastGenOutput>

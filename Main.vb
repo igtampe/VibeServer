@@ -2,6 +2,7 @@ Imports System.IO
 Imports System.Net
 Imports System.Net.Sockets
 
+Imports BasicRender
 Imports Utils
 Imports Core
 Imports Notif
@@ -17,9 +18,13 @@ Public Module Main
     Public IP As String
 
     Public Sub Main()
+
+        Console.SetBufferSize(120, 30)
+        Console.SetWindowSize(120, 30)
+
+        Console.Title = "Visual Basic Economy Server [Version 5.0]"
+        DrawHeader()
         Color(ConsoleColor.White)
-        Console.WriteLine("Visual Basic Economy Server [Version 4.0]")
-        Console.WriteLine("(c)2019 Igtampe, No Rights Reserved.")
         Color(ConsoleColor.Gray)
         Console.WriteLine("")
         Console.WriteLine("")
@@ -53,38 +58,53 @@ Public Module Main
 
         Dim ClientMSG As String
 
+        Color(ConsoleColor.Yellow)
+        ToConsole("Waiting for connection...")
+        DrawHeader()
 
         While True
-            Color(ConsoleColor.Yellow)
-            ToConsole("Waiting for connection...")
+            If tcpListener.Pending Then
+                Dim networkStream As NetworkStream = New NetworkStream(tcpListener.AcceptSocket())
+                Dim binaryWriter As BinaryWriter = New BinaryWriter(networkStream)
+                Dim binaryReader As BinaryReader = New BinaryReader(networkStream)
 
-            Dim networkStream As NetworkStream = New NetworkStream(tcpListener.AcceptSocket())
-            Dim binaryWriter As BinaryWriter = New BinaryWriter(networkStream)
-            Dim binaryReader As BinaryReader = New BinaryReader(networkStream)
+                Color(ConsoleColor.Green)
+                ToConsole("Connected! Waiting for string...")
+                Color(ConsoleColor.Gray)
 
-            Color(ConsoleColor.Green)
-            ToConsole("Connected! Waiting for string...")
-            Color(ConsoleColor.Gray)
+                Try
+                    ClientMSG = binaryReader.ReadString().Trim()
+                    ToConsole("Received (" & ClientMSG & ")")
+                    binaryWriter.Write(ParseCommand(ClientMSG))
+                Catch ex As Exception
+                    ErrorToConsole("Could not read string for some reason.", ex)
+                End Try
 
-            Try
-                ClientMSG = binaryReader.ReadString().Trim()
-                ToConsole("Received (" & ClientMSG & ")")
-                binaryWriter.Write(ParseCommand(ClientMSG))
-            Catch ex As Exception
-                ErrorToConsole("Could not read string for some reason.", ex)
-            End Try
+                Color(ConsoleColor.Yellow)
+                ToConsole("Waiting for connection...")
+                DrawHeader()
+            End If
+
+            'We now have a spot to automate tasks
+            Sleep(1000)
 
 
         End While
     End Sub
 
-    Function ParseCommand(ClientMSG As String) As String
+    Public Sub DrawHeader()
+        Box(ConsoleColor.DarkBlue, 120, 1, 0, 0)
+        SetPos(0, 0)
+        Color(ConsoleColor.DarkBlue, ConsoleColor.White)
+        CenterText("Visual Basic Economy Server [Version 5.0] | (C)2020 Igtampe, No Rights reserved")
+    End Sub
 
+
+    Function ParseCommand(ClientMSG As String) As String
         If (ClientMSG = "CONNECTED") Then
             'Ping
             ToConsole("Classic Packet, replied.")
             Return "You've connected to the server! Congrats."
-
         ElseIf (ClientMSG.StartsWith("CU")) Then
             'Check User
             Return CU(ClientMSG.Remove(0, 2))
@@ -140,7 +160,6 @@ Public Module Main
         ElseIf ClientMSG.StartsWith("CON") Then
             'Contractus
             Return CON(ClientMSG.Replace("CON", ""))
-
         Else
             'Invalid Packet
             ToConsole("Invalid Packet Sent")

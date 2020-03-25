@@ -72,7 +72,7 @@ Public Class Notif
             File.Delete(UserFile(Notifuser, "notifs.txt"))
             ToConsole("OK I did it yay")
             Return "S"
-        Catch ex As exception
+        Catch ex As Exception
             ErrorToConsole("Oh no something happened", ex)
             Return "E"
         End Try
