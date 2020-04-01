@@ -10,7 +10,11 @@ Public Class Core
     ''' Checks A User's Credentials
     ''' </summary>
     ''' <param name="CUCommand">CUCommand Formatted as [ID][PIN]</param>
-    ''' <returns></returns>
+    ''' <returns>
+    ''' 3 if the pin is correct
+    ''' 2 If the pin is incorrect
+    ''' 1 if it could not find the user
+    ''' </returns>
     Public Shared Function CU(CUCommand As String) As String
 
         Dim CUUser As String

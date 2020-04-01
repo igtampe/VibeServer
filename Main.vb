@@ -4,74 +4,96 @@ Imports System.Net.Sockets
 
 Imports BasicRender
 Imports Utils
-Imports Core
-Imports Notif
-Imports Bank
-Imports EzTax
-Imports Checkbook
-Imports Contractus
 
+''' <summary>
+''' SMOKESIGNAL SERVER VERSION 6
+''' 
+''' Modified for ViBE Server compatibility. It really is quite the bodge but hey at least we're now on SmokeSignal V6
+''' </summary>
 Public Module Main
 
-    Public UMSWEBDir As String
-    Public WEBDir As String
-    Public IP As String
+    Public IP As String = "127.0.0.1"
+    Public Port As Integer = 757
+    Public UMSWEBDir As String = "."
+    Public WEBDir As String = "."
+    Public Extensions(0) As SmokeSignalExtension
+    'I would make that an arraylist to be simple pero no puedo sadly. Oh well.
+
+    'SERVER SETUP
+    Public Const SERVER_NAME As String = "ViBE Server"
+    Public Const SERVER_VERSION As String = "6.0"
+    Public Const HEADER_BACK_COLOR As ConsoleColor = ConsoleColor.DarkCyan
+    Public Const HEADER_FONT_COLOR As ConsoleColor = ConsoleColor.White
+
+    '(pls do not touch me)
+    Public Const SMOKESIGNAL_VERSION As String = "6.0"
+
+    Public Sub RegisterAllExtensions()
+        ReDim Extensions(2) 'Redim the Extensions array to the size of the number of extensions you want.
+
+        'Add your extensions. When creating the extension, the extension should initialize
+        Extensions(0) = New DummyExtension()
+        Extensions(1) = New ViBEExtension()
+        Extensions(2) = New LBL()
+    End Sub
 
     Public Sub Main()
 
+        'Console Size (Remember to update on BasicRender if u want to change this)
         Console.SetBufferSize(120, 30)
         Console.SetWindowSize(120, 30)
 
-        Console.Title = "Visual Basic Economy Server [Version 5.0]"
-        DrawHeader()
-        Color(ConsoleColor.White)
-        Color(ConsoleColor.Gray)
-        Console.WriteLine("")
-        Console.WriteLine("")
+        'Server Initialization
+        Console.Title = SERVER_NAME & " [Version " & SERVER_VERSION & "]"
         ToConsole("Starting Server...")
 
+        'Read settings
         If (File.Exists("Settings1.cfg")) Then
-            FileOpen(1, "Settings1.cfg", OpenMode.Input)
-            Dim str15 As String = LineInput(1).Replace("""", "")
-            Dim Settings As String() = str15.Split(",")
+            'Set Settings
+            Dim Settings As String() = ReadFromFile("Settings1.cfg").Split(",")
             IP = Settings(0)
             UMSWEBDir = Settings(1)
             WEBDir = Settings(2)
             FileClose(1)
         Else
-            IP = "127.0.0.1"
-            UMSWEBDir = "A:\MARSH"
-            WEBDir = "A:\MARSH"
-            FileOpen(1, "Settings1.cfg", OpenMode.Output)
-            WriteLine(1, New Object() {IP, UMSWEBDir, WEBDir})
-            FileClose(1)
-            ToConsole("Could Not Find Settings.cfg in current directory, rendered default one")
+            ToFile("Settings1.cfg", IP & "," & UMSWEBDir & "," & WEBDir)
+            ToConsole("Could Not Find Settings.cfg in current directory, rendered default one", ConsoleColor.Yellow)
         End If
 
-        Dim tcpListener As TcpListener = New TcpListener(IPAddress.Parse(IP), 757)
+        'Extensions Registering
+        RegisterAllExtensions()
+
+        ToConsole("Registered " & Extensions.Length & " Extension(s): ", ConsoleColor.Blue)
+        For Each SmokeSignal In Extensions
+            ToConsole(" - " & SmokeSignal.getName & " [Version " & SmokeSignal.getVersion & "]", ConsoleColor.Blue)
+        Next
+
+        'Actually start the server
+        Dim tcpListener As TcpListener = New TcpListener(IPAddress.Parse(IP), Port)
         Dim tcpClient As TcpClient = New TcpClient()
         tcpListener.Start()
 
-        Color(ConsoleColor.Green)
-        ToConsole("Server Started!")
-        Color(ConsoleColor.Gray)
+        ToConsole("Server Started!", ConsoleColor.Green)
 
         Dim ClientMSG As String
-
-        Color(ConsoleColor.Yellow)
-        ToConsole("Waiting for connection...")
+        ToConsole("Waiting for connection...", ConsoleColor.Yellow)
         DrawHeader()
 
+        'The bulk loop
         While True
+
+            'Check if we have a pending connection
             If tcpListener.Pending Then
+                ClearHeader()
+
+                'Accept it...
                 Dim networkStream As NetworkStream = New NetworkStream(tcpListener.AcceptSocket())
                 Dim binaryWriter As BinaryWriter = New BinaryWriter(networkStream)
                 Dim binaryReader As BinaryReader = New BinaryReader(networkStream)
 
-                Color(ConsoleColor.Green)
-                ToConsole("Connected! Waiting for string...")
-                Color(ConsoleColor.Gray)
+                ToConsole("Connected! Waiting for string...", ConsoleColor.Green)
 
+                'Try to take the string, and parse it
                 Try
                     ClientMSG = binaryReader.ReadString().Trim()
                     ToConsole("Received (" & ClientMSG & ")")
@@ -80,91 +102,48 @@ Public Module Main
                     ErrorToConsole("Could not read string for some reason.", ex)
                 End Try
 
-                Color(ConsoleColor.Yellow)
-                ToConsole("Waiting for connection...")
+                'Return to the waiting state
+                ToConsole("Waiting for connection...", ConsoleColor.Yellow)
                 DrawHeader()
             End If
 
-            'We now have a spot to automate tasks
-            Sleep(1000)
+            'Tick each time we can.
+            For Each SmokeSignal In Extensions
+                SmokeSignal.Tick()
+            Next
 
+            'S P E E N
+            Spinner(Console.CursorLeft, Console.CursorTop)
+
+            'Wait for another go around
+            Sleep(1000)
 
         End While
     End Sub
 
     Public Sub DrawHeader()
-        Box(ConsoleColor.DarkBlue, 120, 1, 0, 0)
+        Box(HEADER_BACK_COLOR, 120, 2, 0, 0)
         SetPos(0, 0)
-        Color(ConsoleColor.DarkBlue, ConsoleColor.White)
-        CenterText("Visual Basic Economy Server [Version 5.0] | (C)2020 Igtampe, No Rights reserved")
+        Color(HEADER_BACK_COLOR, HEADER_FONT_COLOR)
+        CenterText(SERVER_NAME + " [Version " & SERVER_VERSION & "] | Running on SmokeSignal V" & SMOKESIGNAL_VERSION)
+        SetPos(0, 1)
+        CenterText(Extensions.Length & " Extension(s) loaded | Listening on " & IP & ":" & Port & " ")
     End Sub
 
+    Public Sub ClearHeader()
+        Box(ConsoleColor.Black, 120, 2, 0, 0)
+    End Sub
 
     Function ParseCommand(ClientMSG As String) As String
-        If (ClientMSG = "CONNECTED") Then
-            'Ping
-            ToConsole("Classic Packet, replied.")
-            Return "You've connected to the server! Congrats."
-        ElseIf (ClientMSG.StartsWith("CU")) Then
-            'Check User
-            Return CU(ClientMSG.Remove(0, 2))
+        Dim Result As String
+        For Each SmokeSignal In Extensions
+            Result = SmokeSignal.Parse(ClientMSG)
+            If Not String.IsNullOrEmpty(Result) Then Return Result
+        Next
 
-        ElseIf (ClientMSG.StartsWith("SM")) Then
-            'Send Money
-            Return SM(ClientMSG.Remove(0, 2))
-
-        ElseIf (ClientMSG.StartsWith("TM")) Then
-            'Transfer Money
-            Return TM(ClientMSG.Remove(0, 2))
-
-        ElseIf (ClientMSG.StartsWith("CP")) Then
-            'Change Pin
-            Return ChangePin(ClientMSG.Remove(0, 2))
-
-        ElseIf (ClientMSG.StartsWith("INFO")) Then
-            'Client Information Request
-            Return INFO(ClientMSG.Remove(0, 4))
-
-        ElseIf ClientMSG.StartsWith("NOTIF") Then
-            'Notification Request
-            Return Notifications(ClientMSG.Replace("NOTIF", ""))
-
-        ElseIf ClientMSG = "DIR" Then
-            'Directory Request
-            Return GetDirectory()
-
-        ElseIf ClientMSG.StartsWith("REG") Then
-            'User Registration Request
-            Return RegisterUser(ClientMSG.Remove(0, 3))
-
-        ElseIf ClientMSG.StartsWith("BNK") Then
-            'Bank Tools
-            Return BNK(ClientMSG.Remove(0, 3))
-
-        ElseIf ClientMSG.StartsWith("CERT") Then
-            'Certification System
-            Return Certify(ClientMSG.Remove(0, 4))
-
-        ElseIf ClientMSG.StartsWith("CHCKBK") Then
-            'Checkbook 2000 Subsystem
-            Return CHCKBK(ClientMSG.Replace("CHCKBK", ""))
-
-        ElseIf ClientMSG.StartsWith("NTA") Then
-            'Non-Taxed Add
-            Return NonTaxAdd(ClientMSG.Replace("NTA", ""))
-
-        ElseIf ClientMSG.StartsWith("EZT") Then
-            'EzTax
-            Return EZT(ClientMSG.Remove(0, 3))
-
-        ElseIf ClientMSG.StartsWith("CON") Then
-            'Contractus
-            Return CON(ClientMSG.Replace("CON", ""))
-        Else
-            'Invalid Packet
-            ToConsole("Invalid Packet Sent")
-            Return "invalid Packet Sent"
-        End If
+        'Invalid Packet
+        ToConsole("Invalid Packet Sent")
+        Return "invalid Packet Sent"
     End Function
 
 

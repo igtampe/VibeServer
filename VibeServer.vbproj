@@ -53,12 +53,17 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Functions\Bank.vb" />
-    <Compile Include="Functions\Checkbook.vb" />
-    <Compile Include="Functions\Contractus.vb" />
-    <Compile Include="Functions\Core.vb" />
-    <Compile Include="Functions\EzTax.vb" />
-    <Compile Include="Functions\Notif.vb" />
+    <Compile Include="Extensions\LBL\LBL.vb" />
+    <Compile Include="Extensions\LBL\LBLTransfer.vb" />
+    <Compile Include="Extensions\ViBEExtensions\Bank.vb" />
+    <Compile Include="Extensions\ViBEExtensions\Checkbook.vb" />
+    <Compile Include="Extensions\ViBEExtensions\Contractus.vb" />
+    <Compile Include="Extensions\ViBEExtensions\Core.vb" />
+    <Compile Include="Extensions\DummyExtension.vb" />
+    <Compile Include="Extensions\ViBEExtensions\EzTax.vb" />
+    <Compile Include="Extensions\ViBEExtensions\Notif.vb" />
+    <Compile Include="Extensions\SmokeSignalExtension.vb" />
+    <Compile Include="Extensions\ViBEExtension.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="Resources.Designer.vb">
       <AutoGen>true</AutoGen>
