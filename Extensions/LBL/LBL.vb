@@ -53,7 +53,7 @@ Public Class LBL
                     Case "OPEN"
                         Return Open(LBLCommand(2))
                     Case "TRANSFER"
-                        If LBLCommand.Count < 4 Then
+                        If LBLCommand.Count >= 4 Then
                             Return Transfer(LBLCommand(2), LBLCommand(3))
                         Else
                             ToConsole("Invalid transfer command sent", ConsoleColor.DarkRed)
