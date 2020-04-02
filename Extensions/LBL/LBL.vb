@@ -27,6 +27,7 @@ Public Class LBL
         If File.Exists("LBL.CFG") Then
             Dim Config As String() = ReadFromFile("LBL.CFG").Split(",")
             WebDirectory = Config(0)
+            WebPrefix = Config(1)
         Else
             ToConsole("Unable to find LBL Config File, Made a new one.")
             ToFile("LBL.CFG", WebDirectory & "," & WebPrefix)
