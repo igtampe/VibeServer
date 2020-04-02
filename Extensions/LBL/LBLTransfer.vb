@@ -15,6 +15,7 @@ Public Class LBLTransfer
         Me.ID = ID
         Me.Filename = Filename
         Me.Directory = Directory
+        If IO.File.Exists(Directory & "\" & Filename) Then IO.File.Delete(Directory & "\" & Filename)
     End Sub
 
     ''' <summary>
@@ -41,7 +42,5 @@ Public Class LBLTransfer
     Public Overrides Function ToString() As String
         Return Filename & " (ID: " & ID & ")"
     End Function
-
-
 
 End Class

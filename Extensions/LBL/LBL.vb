@@ -53,7 +53,7 @@ Public Class LBL
                     Case "OPEN"
                         Return Open(LBLCommand(2))
                     Case "TRANSFER"
-                        If LBLCommand.Count = 4 Then
+                        If LBLCommand.Count < 4 Then
                             Return Transfer(LBLCommand(2), LBLCommand(3))
                         Else
                             ToConsole("Invalid transfer command sent", ConsoleColor.DarkRed)
@@ -75,7 +75,7 @@ Public Class LBL
 
     Private Function Open(Filename As String) As String
         'Start a transfer
-        ToConsole("Attempting to start a transfer for file" & Filename & "...")
+        ToConsole("Attempting to start a transfer for file " & Filename & "...")
 
         Dim NFTID = ""
 
@@ -114,6 +114,7 @@ Public Class LBL
                 Return "OK"
             Catch ex As Exception
                 ErrorToConsole("Unable to append data to the Transfer's file", ex)
+                Return "E"
             End Try
         Else
             ToConsole("Could not find Transfer " & TransferID, ConsoleColor.DarkRed)
@@ -126,7 +127,7 @@ Public Class LBL
         Dim TheTransfer As LBLTransfer = GetTransfer(TransferID)
         If Not IsNothing(TheTransfer) Then
             Try
-                ToConsole("Closing off File Transfer" & TransferID)
+                ToConsole("Closing off File Transfer " & TransferID)
                 Dim filename As String = TheTransfer.Filename
                 'TheTransfer.Close()
                 ActiveTransfers.Remove(TheTransfer)
