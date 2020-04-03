@@ -53,6 +53,8 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\IMEX\IMEX.vb" />
+    <Compile Include="Extensions\IMEX\TaxCalc.vb" />
     <Compile Include="Extensions\LBL\LBL.vb" />
     <Compile Include="Extensions\LBL\LBLTransfer.vb" />
     <Compile Include="Extensions\ViBEExtensions\Bank.vb" />

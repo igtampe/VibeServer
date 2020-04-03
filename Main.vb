@@ -29,12 +29,13 @@ Public Module Main
     Public Const SMOKESIGNAL_VERSION As String = "6.0.1"
 
     Public Sub RegisterAllExtensions()
-        ReDim Extensions(2) 'Redim the Extensions array to the size of the number of extensions you want.
+        ReDim Extensions(3) 'Redim the Extensions array to the size of the number of extensions you want.
 
         'Add your extensions. When creating the extension, the extension should initialize
         Extensions(0) = New DummyExtension()
         Extensions(1) = New ViBEExtension()
         Extensions(2) = New LBL()
+        Extensions(3) = New IMEX()
     End Sub
 
     Public Sub Main()
