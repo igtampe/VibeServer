@@ -1,5 +1,4 @@
 ﻿Imports Utils
-Imports BasicRender
 Imports TaxCalc
 Imports System.IO
 Imports System.Collections
@@ -8,7 +7,9 @@ Public Class IMEX
     Implements SmokeSignalExtension
 
     Public Const EXTENSION_NAME = "IncomeMan Express"
-    Public Const EXTENSION_VERS = "1.0"
+    Public Const EXTENSION_VERS = "2.0"
+    Public Calculator As TaxCalc
+
 
     Public Structure User
         Public ID As String
@@ -55,7 +56,7 @@ Public Class IMEX
 
         End Function
 
-        Public Sub New(ID As String, Category As Long)
+        Public Sub New(ID As String, Category As Long, Calculator As TaxCalc)
             Me.ID = ID
             Me.Category = Category
 
@@ -97,7 +98,7 @@ Public Class IMEX
                 EI = 0
             End Try
 
-            TaxInfo = New TaxInformation(EI, NewpondIncome, UrbiaIncome, ParadisusIncome, LaertesIncome, NOstenIncome, SOstenIncome, Category)
+            TaxInfo = New TaxInformation(EI, NewpondIncome, UrbiaIncome, ParadisusIncome, LaertesIncome, NOstenIncome, SOstenIncome, Category, Calculator)
             Income = TaxInfo.FederalIncome - EI
         End Sub
 
@@ -180,13 +181,22 @@ Public Class IMEX
 
     Public Sub New()
         ToConsole("Initializing IMEX", ConsoleColor.Cyan)
-        UMSGov = New User("33118", 2)
-        Newpond = New User("86700", 2)
-        Paradisus = New User("86701", 2)
-        Urbia = New User("86702", 2)
-        Laertes = New User("86703", 2)
-        NorthOsten = New User("86704", 2)
-        SouthOsten = New User("86705", 2)
+
+        If Not File.Exists("TaxInfo.txt") Then
+            ErrorToConsole("Could not initialize IMEX! Could not find TaxInfo.txt", New FileNotFoundException)
+            Return
+        End If
+
+        Calculator = New TaxCalc("TaxInfo.txt")
+        ToConsole("Loaded TaxInfo version " & Calculator.TaxInfoID & " With " & Calculator.NumberOfBrackets & " Brackets in total", ConsoleColor.Cyan)
+
+        UMSGov = New User("33118", 2, Calculator)
+        Newpond = New User("86700", 2, Calculator)
+        Paradisus = New User("86701", 2, Calculator)
+        Urbia = New User("86702", 2, Calculator)
+        Laertes = New User("86703", 2, Calculator)
+        NorthOsten = New User("86704", 2, Calculator)
+        SouthOsten = New User("86705", 2, Calculator)
     End Sub
 
     Public Sub Tick() Implements SmokeSignalExtension.Tick
@@ -195,6 +205,7 @@ Public Class IMEX
     End Sub
 
     Public Function Parse(Command As String) As String Implements SmokeSignalExtension.Parse
+        If IsNothing(Calculator) Then Return ""
         If Command.StartsWith("IMEX") Then
 
             ToConsole("Hello yes, IMEX", ConsoleColor.DarkCyan)
@@ -212,6 +223,8 @@ Public Class IMEX
                     Payday(NormalUsers)
                     Payday(CorporateUsers)
                     Payday(GovUsers)
+                Case "TAXVER"
+                    Return Calculator.TaxInfoID
                 Case Else
                     Return Nothing
             End Select
@@ -277,7 +290,7 @@ Public Class IMEX
                 ReDim Preserve Users(Counter - 1)
 
                 'ADD THE USER
-                Users(Counter - 1) = New User(TempStringHolder.Replace("USER" & Counter & ":", ""), Category)
+                Users(Counter - 1) = New User(TempStringHolder.Replace("USER" & Counter & ":", ""), Category, Calculator)
 
                 'LOG IT
                 ToLog("INFO: Loaded user " & Counter & " which is " & Users(Counter - 1).ID & " and has an income of " & (Users(Counter - 1).TaxInfo.FederalIncome - Users(Counter - 1).EI).ToString("N0") & "p")
