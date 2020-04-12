@@ -80,8 +80,10 @@ Public Class IMEX
                 NOstenIncome = TempBreakdown(4)
                 SOstenIncome = TempBreakdown(5)
             Catch
-                ToConsole("Unable to get " & ID & "'s income breakdown", ConsoleColor.Yellow)
-                ToLog("WARN: Unable to get " & ID & "'s income breakdown.")
+                If Not Category = 2 Then
+                    ToConsole("Unable to get " & ID & "'s income breakdown", ConsoleColor.Yellow)
+                    ToLog("WARN: Unable to get " & ID & "'s income breakdown.")
+                End If
                 NewpondIncome = 0
                 UrbiaIncome = 0
                 ParadisusIncome = 0
