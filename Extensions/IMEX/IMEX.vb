@@ -7,7 +7,7 @@ Public Class IMEX
     Implements SmokeSignalExtension
 
     Public Const EXTENSION_NAME = "IncomeMan Express"
-    Public Const EXTENSION_VERS = "2.0"
+    Public Const EXTENSION_VERS = "2.1"
     Public Calculator As TaxCalc
 
 
@@ -215,6 +215,8 @@ Public Class IMEX
 
             'Basic checks and initialization 
             If IMEXCommand.Count < 2 Then Return ""
+            If IMEXCommand(1).ToUpper = "TAXVER" Then Return Calculator.TaxInfoID
+
             If Not Initialize() Then Return "IE"
 
             Select Case IMEXCommand(1).ToUpper
@@ -225,8 +227,6 @@ Public Class IMEX
                     Payday(NormalUsers)
                     Payday(CorporateUsers)
                     Payday(GovUsers)
-                Case "TAXVER"
-                    Return Calculator.TaxInfoID
                 Case Else
                     Return Nothing
             End Select
@@ -261,7 +261,7 @@ Public Class IMEX
             Return False
         End If
 
-        GovUsers = LoadUsers(UMSWEBDir & "\ssh\incomeman\Corporate.isf", 1)
+        GovUsers = LoadUsers(UMSWEBDir & "\ssh\incomeman\NonTaxed.isf", 1)
         If IsNothing(GovUsers) Then
             ToConsole("Could not retrieve Government Users", ConsoleColor.DarkRed)
             Return False
