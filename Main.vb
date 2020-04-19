@@ -26,7 +26,7 @@ Public Module Main
     Public Const HEADER_FONT_COLOR As ConsoleColor = ConsoleColor.White
 
     '(pls do not touch me)
-    Public Const SMOKESIGNAL_VERSION As String = "6.0.1"
+    Public Const SMOKESIGNAL_VERSION As String = "6.1"
 
     Public Sub RegisterAllExtensions()
         ReDim Extensions(3) 'Redim the Extensions array to the size of the number of extensions you want.
@@ -41,8 +41,8 @@ Public Module Main
     Public Sub Main()
 
         'Console Size (Remember to update on BasicRender if u want to change this)
-        Console.SetBufferSize(120, 30)
         Console.SetWindowSize(120, 30)
+        Console.SetBufferSize(120, 30)
 
         'Server Initialization
         Console.Title = SERVER_NAME & " [Version " & SERVER_VERSION & "]"
