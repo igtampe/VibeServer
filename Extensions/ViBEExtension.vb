@@ -1,9 +1,7 @@
-﻿Imports Bank
-Imports Checkbook
+﻿Imports Checkbook
 Imports Contractus
 Imports Core
 Imports EzTax
-Imports Notif
 
 Public Class ViBEExtension
     Implements ISmokeSignalAuthenticatedExtension
@@ -11,7 +9,6 @@ Public Class ViBEExtension
     Public Const EXTENSION_VERS = "1.0"
 
     Public Sub New()
-
     End Sub
 
     Public Sub Tick() Implements ISmokeSignalAuthenticatedExtension.Tick
@@ -21,16 +18,20 @@ Public Class ViBEExtension
     Public Function Parse(ClientMSG As String) As String Implements ISmokeSignalAuthenticatedExtension.Parse
 
         If ClientMSG = "DIR" Then
-            'Directory Request
+            'DIR
             Return String.Join(",", VAuthenticator.AllUsers.ToArray)
         ElseIf ClientMSG.StartsWith("INFO") Then
-
+            'INFO57174
             For Each User As ViBEUser In VAuthenticator.AllUsers
                 If User.ID = ClientMSG.Substring(4) Then Return User.Info
             Next
 
             'We couldn't find him :(
             Return "E"
+
+        ElseIf Command.StartsWith("CERT") Then
+            'CERT
+            Return Certify(Command.Remove(0, 4))
 
         End If
 
@@ -39,7 +40,6 @@ Public Class ViBEExtension
     End Function
 
     Public Function Parse(User As ISmokeSignalUser, Command As String) As String Implements ISmokeSignalAuthenticatedExtension.Parse
-
         Dim VUser As ViBEUser = TryCast(User, ViBEUser)
         If IsNothing(VUser) Then Return ""
 
@@ -49,27 +49,21 @@ Public Class ViBEExtension
         Next
 
         If (Command.StartsWith("SM")) Then
-            '57174|4640|SM,UMSNB,57174\GBANK
+            'SM,UMSNB,33118\UMSNB,5000
             Return SM(Command.Remove(0, 2))
 
-        ElseIf (Command.StartsWith("TM")) Then
-            'Transfer Money
-            Return TM(Command.Remove(0, 2))
-
         ElseIf (Command.StartsWith("CP")) Then
-            'Change Pin
-            Return ChangePin(Command.Remove(0, 2))
+            '57174|4640|CP4641
+            VUser.ChangePin(Command.Remove(0, 2))
+            Return "S"
 
         ElseIf Command.StartsWith("NOTIF") Then
-            'Notification Request
-            Return Notifications(Command.Replace("NOTIF", ""))
-        ElseIf Command.StartsWith("BNK") Then
-            'Bank Tools
-            Return BNK(Command.Remove(0, 3))
+            '57174|4640|NOTIFREMO4
+            Return Notifications(VUser, Command.Substring(5))
 
-        ElseIf Command.StartsWith("CERT") Then
-            'Certification System
-            Return Certify(Command.Remove(0, 4))
+        ElseIf Command.StartsWith("BNK") Then
+            '57174|4640|BNK,A,GBANK
+            Return BNK(VUser, Command)
 
         ElseIf Command.StartsWith("CHCKBK") Then
             'Checkbook 2000 Subsystem

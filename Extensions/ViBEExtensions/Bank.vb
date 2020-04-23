@@ -1,48 +1,33 @@
-﻿Imports System.IO
+﻿''' <summary>Bank Management Expansion</summary>
+Public Module Bank
 
-''' <summary>
-''' Bank Management Expansion
-''' </summary>
-Public Class Bank
-
-    ''' <summary>
-    ''' Launches BNK Tools
-    ''' </summary>
-    ''' <param name="BNKMSG"></param>
-    ''' <returns></returns>
-    Public Shared Function BNK(BNKMSG As String) As String
+    ''' <summary>Launches BNK Tools</summary>
+    Public Function BNK(ByRef Vuser As ViBEUser, BNKMSG As String) As String
         ToConsole("BNK Tools invoked")
-        'BNKA57174GBANK
+        'BNK,A,GBANK
 
-        If Not BNKMSG.Count = 11 Then
-            ToConsole("Something seems fishy, I'm not going to do it.")
-            Return "E"
-        End If                    'A57174GBANK
-        Dim BNKACT As String = BNKMSG.Remove(1, BNKMSG.Count - 1)
-        'A
-        Dim BNKID As String = BNKMSG.Remove(6, 5)
-        'A57174
-        BNKID = BNKID.Remove(0, 1)
-        '57174
-        Dim BNKBNK As String = BNKMSG.Remove(0, 6)
-        'GBANK
+        Dim BNKACT As String = BNKMSG.Split(",")(1)
+        Dim BNKBNK As ViBEBank
+
+        Select Case BNKMSG.Split(",")(2).ToUpper
+            Case "UMSNB"
+                BNKBNK = Vuser.UMSNB
+            Case "GBANK"
+                BNKBNK = Vuser.GBANK
+            Case "RIVER"
+                BNKBNK = Vuser.RIVER
+            Case Else
+                ToConsole("Invlaid bank specified", ConsoleColor.DarkRed)
+                Return "E"
+        End Select
 
         Select Case BNKACT
             Case "C"
                 Try
-                    ToConsole("Attempting to close (" & BNKID & ")'s (" & BNKBNK & ") account.")
-                    FileOpen(3, UMSWEB_DIR & "\SSH\USERS\" & BNKID & "\" & BNKBNK & "\Balance.dll", OpenMode.Input)
-                    Dim BNKBAL As Long = LineInput(3)
-                    ToConsole("Bank balance is currently (" & BNKBAL & ")")
-                    FileClose(3)
-                    If Not BNKBAL = "0" Then
-                        ToConsole("Looks to me like it's not 0. Stopping.")
-                        Return "E"
-                    End If
+                    ToConsole("Attempting to close (" & Vuser.ID & ")'s (" & BNKBNK.Name & ") account.")
 
-                    ToConsole("Deleting Folder")
-                    Directory.Delete(UMSWEB_DIR & "\SSH\USERS\" & BNKID & "\" & BNKBNK, True)
-                    ToConsole("KK Done!")
+                    BNKBNK.CloseBank()
+
                     Return "S"
                 Catch ex As Exception
                     ErrorToConsole("Shoot I couldn't do that.", ex)
@@ -51,37 +36,31 @@ Public Class Bank
 
             Case "O"
                 Try
-                    ToConsole("Attempting to open (" & BNKID & ")'s (" & BNKBNK & ") account.")
-                    Directory.CreateDirectory(UMSWEB_DIR & "\SSH\USERS\" & BNKID & "\" & BNKBNK)
-                    Directory.CreateDirectory(UMSWEB_DIR & "\SSH\USERS\" & BNKID & "\" & BNKBNK & "\CHECKS")
 
-                    FileOpen(1, UMSWEB_DIR & "\SSH\USERS\" & BNKID & "\" & BNKBNK & "\BALANCE.dll", OpenMode.Output)
-                    PrintLine(1, "0000")
-                    FileClose(1)
-
-                    FileOpen(1, UMSWEB_DIR & "\SSH\USERS\" & BNKID & "\" & BNKBNK & "\Log.log", OpenMode.Output)
-                    PrintLine(1, "[" & DateTime.Now.ToString & "] Account Created on ViBE")
-                    FileClose(1)
+                    BNKBNK.OpenBank()
                     Return "S"
+
                 Catch ex As Exception
+
                     ErrorToConsole("Shoot I couldn't do that.", ex)
                     Return "E"
                 End Try
 
             Case "L"
                 Try
-                    ToConsole("Copying " & UMSWEB_DIR & "\SSH\USERS\" & BNKID & "\" & BNKBNK & "\Log.log to " & WEB_DIR & "\LOGS\" & BNKID & BNKBNK & ".log...")
-                    File.Copy(UMSWEB_DIR & "\SSH\USERS\" & BNKID & "\" & BNKBNK & "\Log.log", WEB_DIR & "\LOGS\" & BNKID & BNKBNK & ".log", True)
-                    ToConsole("Done!")
+
+                    BNKBNK.UploadLog()
                     Return "S"
+
                 Catch ex As Exception
                     ErrorToConsole("Shoot I couldn't do that.", ex)
                     Return "E"
                 End Try
 
             Case Else
+                ToConsole("Couldn't Parse command")
                 Return "E"
         End Select
 
     End Function
-End Class
+End Module

@@ -39,6 +39,10 @@ Public Class ViBENotificationHandler
     End Sub
 
     Public Function GetNotifs() As String
+
+        'Can't return nothing. Otherwise it'll think we couldn't parse it!
+        If AllNotifs.Count = 0 Then Return "N"
+
         Return String.Join("`", AllNotifs.ToArray)
     End Function
 

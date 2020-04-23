@@ -138,8 +138,12 @@ Public Module Main
 
         'Attempt parsing with Non-Authenticated extensions
         For Each SmokeSignal As ISmokeSignalAuthenticatedExtension In Extensions
-            Result = SmokeSignal.Parse(ClientMSG)
-            If Not String.IsNullOrEmpty(Result) Then Return Result
+            Try
+                Result = SmokeSignal.Parse(ClientMSG)
+                If Not String.IsNullOrEmpty(Result) Then Return Result
+            Catch ex As Exception
+                ErrorToConsole(SmokeSignal.GetName & " suffered an uncontained exception when processing this command", ex)
+            End Try
         Next
 
         'Ask the authenticator to parse this
@@ -156,8 +160,12 @@ Public Module Main
 
         'Attempt to parse with authenticated extensions
         For Each AuthSmokeSignal As ISmokeSignalAuthenticatedExtension In AuthenticatedExtensions
-            Result = AuthSmokeSignal.Parse(ExecutingUser, ClientSplit(2))
-            If Not String.IsNullOrEmpty(Result) Then Return Result
+            Try
+                Result = AuthSmokeSignal.Parse(ExecutingUser, ClientSplit(2))
+                If Not String.IsNullOrEmpty(Result) Then Return Result
+            Catch ex As Exception
+                ErrorToConsole(AuthSmokeSignal.GetName & " suffered an uncontained exception when processing this command", ex)
+            End Try
         Next
 
         'Invalid Packet

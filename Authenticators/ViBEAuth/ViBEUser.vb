@@ -59,7 +59,6 @@ Public Class ViBEUser
     Public Sub ChangePin(NewPin As String)
         Pin = NewPin
         ToFile(Directory & "Pin.dll", NewPin)
-
     End Sub
 
     Public Function GetPassword() As String Implements ISmokeSignalUser.GetPassword
@@ -93,6 +92,12 @@ Public Class ViBEUser
     Public Function Info()
         Return String.Join(",", {UMSNB.IsOpen, UMSNB.GetBalance, GBANK.IsOpen, GBANK.GetBalance, RIVER.IsOpen, RIVER.GetBalance, Username, NotifHandler.AllNotifs.Count})
     End Function
+
+    Public Sub AddEI(Amount As Long)
+        Dim EI As Long = Amount
+        If File.Exists(Directory & "EI.dll") Then EI += ReadFromFile(Directory & "EI.dll")
+        ToFile(Directory & "EI.dll", EI)
+    End Sub
 
 End Class
 

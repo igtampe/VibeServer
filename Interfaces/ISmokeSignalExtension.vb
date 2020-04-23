@@ -1,5 +1,5 @@
 ﻿''' <summary>An interface to develop extensions </summary>
-Public Interface ISmokeSignalAuthenticatedExtension
+Public Interface ISmokeSignalExtension
 
     ''' <summary>Returns the response to the specified parsable command.</summary>
     ''' <param name="Command"></param>

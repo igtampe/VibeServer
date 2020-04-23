@@ -52,7 +52,7 @@
 
 
     ''' <summary>Send money from this bank account to the other bank account</summary>
-    Public Sub SendMoney(OtherBank As ViBEBank, Amount As Long)
+    Public Sub SendMoney(ByRef OtherBank As ViBEBank, Amount As Long)
 
         If Not Open Or Not OtherBank.Open Then Throw New Exception("Cannot transfer money. One of these accounts is not opened.")
 
@@ -67,16 +67,23 @@
         ToBankLog("You ~vibed~ " & Amount.ToString("N0") & "p to " & OtherBank.TiedUser.ToString & "'s " & OtherBank.Name & " account.")
         OtherBank.ToBankLog(TiedUser.Username.ToString & " ~vibed~ " & Amount.ToString("N0") & "p from their " & Name & " Account to you")
 
+        If Not TiedUser.ID = OtherBank.TiedUser.ID Then
+            OtherBank.TiedUser.NotifHandler.AddNotif(TiedUser.Username.ToString & " ~vibed~ " & Amount.ToString("N0") & "p from their " & Name & " Account to you")
+            OtherBank.TiedUser.addEI(Amount)
+        End If
+
     End Sub
 
     Public Sub NTA(Amount As Long)
-        If Not Open Then Throw New Exception("Cannot transfer money. One of these accounts is not opened.")
+        If Not Open Then Throw New Exception("Cannot receive money. This accounts is not opened.")
 
         ToConsole("NTA-ing " & Amount.ToString("N0") & "p")
 
         Balance += Amount
 
         ToBankLog("Your account was credited " & Amount.ToString("N0") & "p, Non-Taxed")
+
+        TiedUser.NotifHandler.AddNotif("Your account was credited " & Amount.ToString("N0") & "p, Non-Taxed to " & Name)
 
     End Sub
 
