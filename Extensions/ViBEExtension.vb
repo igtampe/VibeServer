@@ -1,26 +1,25 @@
-﻿Imports Utils
-Imports Bank
+﻿Imports Bank
 Imports Checkbook
 Imports Contractus
 Imports Core
 Imports EzTax
 Imports Notif
+
 Public Class ViBEExtension
-    Implements SmokeSignalExtension
+    Implements ISmokeSignalExtension
     Public Const EXTENSION_NAME = "ViBE Super Extension"
     Public Const EXTENSION_VERS = "1.0"
 
+    Public Sub New()
 
-    Public Sub Tick() Implements SmokeSignalExtension.Tick
+    End Sub
+
+    Public Sub Tick() Implements ISmokeSignalExtension.Tick
         'Do nothing
     End Sub
 
-    Public Function Parse(ClientMSG As String) As String Implements SmokeSignalExtension.Parse
-        If (ClientMSG = "CONNECTED") Then
-            'Ping
-            ToConsole("Classic Packet, replied.")
-            Return "You've connected to the server! Congrats."
-        ElseIf (ClientMSG.StartsWith("CU")) Then
+    Public Function Parse(ClientMSG As String) As String Implements ISmokeSignalExtension.Parse
+        If (ClientMSG.StartsWith("CU")) Then
             'Check User
             Return CU(ClientMSG.Remove(0, 2))
 
@@ -80,11 +79,11 @@ Public Class ViBEExtension
             Return ""
         End If
     End Function
-    Public Function getName() As String Implements SmokeSignalExtension.getName
+    Public Function getName() As String Implements ISmokeSignalExtension.GetName
         Return EXTENSION_NAME
     End Function
 
-    Public Function getVersion() As String Implements SmokeSignalExtension.getVersion
+    Public Function getVersion() As String Implements ISmokeSignalExtension.GetVersion
         Return EXTENSION_VERS
     End Function
 

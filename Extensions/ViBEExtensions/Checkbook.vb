@@ -45,10 +45,10 @@ Public Class Checkbook
         CHCKMSG = CHCKMSG.Replace("READ", "")
         Dim notifarray() As String
         ToConsole("trying to READ from " & CHCKMSG & "'s messages")
-        If Not File.Exists(String.Concat(UMSWEBDir, "\SSH\USERS\", CHCKMSG, "\chckbk.txt")) Then
+        If Not File.Exists(String.Concat(UMSWEB_DIR, "\SSH\USERS\", CHCKMSG, "\chckbk.txt")) Then
             Return "N"
         End If
-        FileOpen(1, String.Concat(UMSWEBDir, "\SSH\USERS\", CHCKMSG, "\chckbk.txt"), OpenMode.Input)
+        FileOpen(1, String.Concat(UMSWEB_DIR, "\SSH\USERS\", CHCKMSG, "\chckbk.txt"), OpenMode.Input)
         Dim I As Integer = 0
         ReDim notifarray(0)
         notifarray(0) = "NothingPls"
@@ -79,13 +79,13 @@ Public Class Checkbook
         Dim notifindex As String = CHCKMSG.Remove(0, 5)
         Dim notifuser As String = CHCKMSG.Remove(5, notifindex.Length)
 
-        If Not File.Exists(String.Concat(UMSWEBDir, "\SSH\USERS\", notifuser, "\chckbk.txt")) Then
+        If Not File.Exists(String.Concat(UMSWEB_DIR, "\SSH\USERS\", notifuser, "\chckbk.txt")) Then
             Return "N"
         End If
 
         ToConsole("Trying to remove index " & notifindex & " from " & notifuser & "'s notification file")
-        FileOpen(1, String.Concat(UMSWEBDir, "\SSH\USERS\", notifuser, "\chckbk.txt"), OpenMode.Input)
-        FileOpen(2, String.Concat(UMSWEBDir, "\SSH\USERS\", notifuser, "\tempchckbk.txt"), OpenMode.Output)
+        FileOpen(1, String.Concat(UMSWEB_DIR, "\SSH\USERS\", notifuser, "\chckbk.txt"), OpenMode.Input)
+        FileOpen(2, String.Concat(UMSWEB_DIR, "\SSH\USERS\", notifuser, "\tempchckbk.txt"), OpenMode.Output)
         Dim I As Integer = 0
         While Not EOF(1)
             If I = notifindex Then
@@ -102,8 +102,8 @@ Chckskipwhile:
         ToConsole("finishing up")
 
 
-        File.Delete(String.Concat(UMSWEBDir, "\SSH\USERS\", notifuser, "\chckbk.txt"))
-        File.Move(String.Concat(UMSWEBDir, "\SSH\USERS\", notifuser, "\tempchckbk.txt"), String.Concat(UMSWEBDir, "\SSH\USERS\", notifuser, "\chckbk.txt"))
+        File.Delete(String.Concat(UMSWEB_DIR, "\SSH\USERS\", notifuser, "\chckbk.txt"))
+        File.Move(String.Concat(UMSWEB_DIR, "\SSH\USERS\", notifuser, "\tempchckbk.txt"), String.Concat(UMSWEB_DIR, "\SSH\USERS\", notifuser, "\chckbk.txt"))
         Return "S"
     End Function
 
@@ -120,7 +120,7 @@ Chckskipwhile:
         ToConsole("Adding '" & ChckWrite & "' to " & Chckuser & "'s chckbck.txt")
 
         Try
-            FileOpen(1, String.Concat(UMSWEBDir, "\SSH\users\", Chckuser, "\chckbk.txt"), OpenMode.Append)
+            FileOpen(1, String.Concat(UMSWEB_DIR, "\SSH\users\", Chckuser, "\chckbk.txt"), OpenMode.Append)
             PrintLine(1, ChckWrite)
             FileClose(1)
 
@@ -128,13 +128,13 @@ Chckskipwhile:
 
             Select Case chckdetails(0)
                 Case "0"
-                    FileOpen(1, String.Concat(UMSWEBDir, "\SSH\users\", Chckuser, "\notifs.txt"), OpenMode.Append)
+                    FileOpen(1, String.Concat(UMSWEB_DIR, "\SSH\users\", Chckuser, "\notifs.txt"), OpenMode.Append)
                     '0`12/4/2018 7:42:42 PM`A Test Account`57174\UMSNB`100`This is a Check
                     PrintLine(1, DateTime.Now.ToString & "`You have a new check from " & chckdetails(2) & " that's worth " & CInt(chckdetails(4)).ToString("N0") & "p")
                     FileClose(1)
 
                 Case "1"
-                    FileOpen(1, String.Concat(UMSWEBDir, "\SSH\users\", Chckuser, "\notifs.txt"), OpenMode.Append)
+                    FileOpen(1, String.Concat(UMSWEB_DIR, "\SSH\users\", Chckuser, "\notifs.txt"), OpenMode.Append)
                     '1`12/4/2018 7:42:42 PM`A Test Account`57174\UMSNB`100`This is a Bill
                     PrintLine(1, DateTime.Now.ToString & "`You have a new bill from " & chckdetails(2) & " that's worth " & CInt(chckdetails(4)).ToString("N0") & "p")
                     FileClose(1)

@@ -4,14 +4,14 @@ Imports System.IO
 Imports System.Collections
 
 Public Class IMEX
-    Implements SmokeSignalExtension
+    Implements ISmokeSignalExtension
 
     Public Const EXTENSION_NAME = "IncomeMan Express"
     Public Const EXTENSION_VERS = "2.1"
     Public Calculator As TaxCalc
 
 
-    Public Structure User
+    Public Structure IMEXUser
         Public ID As String
         Public Category As Integer
         Public TaxInfo As TaxInformation
@@ -38,7 +38,7 @@ Public Class IMEX
         End Function
 
         Public Function HasBank(Bank As String) As Boolean
-            Return Directory.Exists(UMSWEBDir & "\ssh\Users\" & ID & "\" & Bank)
+            Return Directory.Exists(UMSWEB_DIR & "\ssh\Users\" & ID & "\" & Bank)
         End Function
 
         Public Function GetBankBalance(Bank As String) As Long
@@ -46,7 +46,7 @@ Public Class IMEX
             If Not HasBank(Bank) Then Return 0
 
             Try
-                FileOpen(4, UMSWEBDir & "\ssh\Users\" & ID & "\" & Bank & "\BALANCE.DLL", OpenMode.Input)
+                FileOpen(4, UMSWEB_DIR & "\ssh\Users\" & ID & "\" & Bank & "\BALANCE.DLL", OpenMode.Input)
                 Dim Balance As Long = LineInput(4)
                 FileClose(4)
                 Return Balance
@@ -70,7 +70,7 @@ Public Class IMEX
 
             'GRAB THE INCOME
             Try
-                FileOpen(2, UMSWEBDir & "\ssh\Users\" & ID & "\BREAKDOWN.dll", OpenMode.Input)
+                FileOpen(2, UMSWEB_DIR & "\ssh\Users\" & ID & "\BREAKDOWN.dll", OpenMode.Input)
                 Dim TempBreakdown() As String = LineInput(2).Split(",")
                 FileClose(2)
                 NewpondIncome = TempBreakdown(0)
@@ -93,7 +93,7 @@ Public Class IMEX
             End Try
 
             Try
-                FileOpen(2, UMSWEBDir & "\ssh\Users\" & ID & "\EI.dll", OpenMode.Input)
+                FileOpen(2, UMSWEB_DIR & "\ssh\Users\" & ID & "\EI.dll", OpenMode.Input)
                 EI = LineInput(2)
                 FileClose(2)
             Catch
@@ -105,7 +105,7 @@ Public Class IMEX
         End Sub
 
         Public Sub ClearEI()
-            File.Delete(UMSWEBDir & "\ssh\Users\" & ID & "\EI.dll")
+            File.Delete(UMSWEB_DIR & "\ssh\Users\" & ID & "\EI.dll")
         End Sub
 
         Public Sub Pay()
@@ -113,7 +113,7 @@ Public Class IMEX
             NTA(Income)
 
             'Send to Logs
-            FileOpen(4, UMSWEBDir & "\ssh\Users\" & ID & "\" & TopBank() & "\log.log", OpenMode.Append)
+            FileOpen(4, UMSWEB_DIR & "\ssh\Users\" & ID & "\" & TopBank() & "\log.log", OpenMode.Append)
             PrintLine(4, "[" & DateTime.Now.ToString & "] IMEX has applied your monthly income of " & Income.ToString("N0") & "p")
             FileClose(4)
         End Sub
@@ -123,7 +123,7 @@ Public Class IMEX
             NTA(-1 * TaxInfo.TotalTax)
 
             'Send to Logs
-            FileOpen(4, UMSWEBDir & "\ssh\Users\" & ID & "\" & TopBank() & "\log.log", OpenMode.Append)
+            FileOpen(4, UMSWEB_DIR & "\ssh\Users\" & ID & "\" & TopBank() & "\log.log", OpenMode.Append)
             PrintLine(4, "[" & DateTime.Now.ToString & "] IMEX applied a tax of " & TaxInfo.TotalTax.ToString("N0") & "p to your account.")
             PrintLine(4, "[" & DateTime.Now.ToString & "] Your total income (monthly and extra) last month was " & (TaxInfo.FederalIncome).ToString("N0") & "p")
             FileClose(4)
@@ -152,12 +152,12 @@ Public Class IMEX
                 'Do nothing
             Else
                 Dim Balance As Long = GetBankBalance(top) + Amount
-                FileOpen(4, UMSWEBDir & "\ssh\Users\" & ID & "\" & TopBank() & "\BALANCE.DLL", OpenMode.Output)
+                FileOpen(4, UMSWEB_DIR & "\ssh\Users\" & ID & "\" & TopBank() & "\BALANCE.DLL", OpenMode.Output)
                 WriteLine(4, Balance)
                 FileClose(4)
 
                 If Log Then
-                    FileOpen(4, UMSWEBDir & "\ssh\Users\" & ID & "\" & TopBank() & "\log.log", OpenMode.Append)
+                    FileOpen(4, UMSWEB_DIR & "\ssh\Users\" & ID & "\" & TopBank() & "\log.log", OpenMode.Append)
                     PrintLine(4, "[" & DateTime.Now.ToString & "] IMEX Moved " & Amount.ToString("N0") & "p to your account from " & From)
                     FileClose(4)
                 End If
@@ -167,17 +167,17 @@ Public Class IMEX
     End Structure
 
     Public Shared NoBankException As Exception = New Exception("The User has no bank")
-    Private Shared UMSGov As User
-    Private Shared Newpond As User
-    Private Shared Paradisus As User
-    Private Shared Urbia As User
-    Private Shared Laertes As User
-    Private Shared NorthOsten As User
-    Private Shared SouthOsten As User
+    Private Shared UMSGov As IMEXUser
+    Private Shared Newpond As IMEXUser
+    Private Shared Paradisus As IMEXUser
+    Private Shared Urbia As IMEXUser
+    Private Shared Laertes As IMEXUser
+    Private Shared NorthOsten As IMEXUser
+    Private Shared SouthOsten As IMEXUser
 
-    Private NormalUsers() As User
-    Private CorporateUsers() As User
-    Private GovUsers() As User
+    Private NormalUsers() As IMEXUser
+    Private CorporateUsers() As IMEXUser
+    Private GovUsers() As IMEXUser
 
     Private Shared ErrorList As ArrayList
 
@@ -192,21 +192,21 @@ Public Class IMEX
         Calculator = New TaxCalc("TaxInfo.txt")
         ToConsole("Loaded TaxInfo version " & Calculator.TaxInfoID & " With " & Calculator.NumberOfBrackets & " Brackets in total", ConsoleColor.Cyan)
 
-        UMSGov = New User("33118", 2, Calculator)
-        Newpond = New User("86700", 2, Calculator)
-        Paradisus = New User("86701", 2, Calculator)
-        Urbia = New User("86702", 2, Calculator)
-        Laertes = New User("86703", 2, Calculator)
-        NorthOsten = New User("86704", 2, Calculator)
-        SouthOsten = New User("86705", 2, Calculator)
+        UMSGov = New IMEXUser("33118", 2, Calculator)
+        Newpond = New IMEXUser("86700", 2, Calculator)
+        Paradisus = New IMEXUser("86701", 2, Calculator)
+        Urbia = New IMEXUser("86702", 2, Calculator)
+        Laertes = New IMEXUser("86703", 2, Calculator)
+        NorthOsten = New IMEXUser("86704", 2, Calculator)
+        SouthOsten = New IMEXUser("86705", 2, Calculator)
     End Sub
 
-    Public Sub Tick() Implements SmokeSignalExtension.Tick
+    Public Sub Tick() Implements ISmokeSignalExtension.Tick
         'Check if it's the first or 15th of the month, and make sure we haven't already done this cosita
         'That will be implemented over in 1.1 because first we need to test this.
     End Sub
 
-    Public Function Parse(Command As String) As String Implements SmokeSignalExtension.Parse
+    Public Function Parse(Command As String) As String Implements ISmokeSignalExtension.Parse
         If IsNothing(Calculator) Then Return ""
         If Command.StartsWith("IMEX") Then
 
@@ -249,19 +249,19 @@ Public Class IMEX
 
     Private Function Initialize() As Boolean
         ToConsole("Initializing User Arrays...")
-        NormalUsers = LoadUsers(UMSWEBDir & "\ssh\incomeman\UserList.isf", 0)
+        NormalUsers = LoadUsers(UMSWEB_DIR & "\ssh\incomeman\UserList.isf", 0)
         If IsNothing(NormalUsers) Then
             ToConsole("Could not retrieve Normal Users", ConsoleColor.DarkRed)
             Return False
         End If
 
-        CorporateUsers = LoadUsers(UMSWEBDir & "\ssh\incomeman\Corporate.isf", 1)
+        CorporateUsers = LoadUsers(UMSWEB_DIR & "\ssh\incomeman\Corporate.isf", 1)
         If IsNothing(CorporateUsers) Then
             ToConsole("Could not retrieve Corporate Users", ConsoleColor.DarkRed)
             Return False
         End If
 
-        GovUsers = LoadUsers(UMSWEBDir & "\ssh\incomeman\NonTaxed.isf", 1)
+        GovUsers = LoadUsers(UMSWEB_DIR & "\ssh\incomeman\NonTaxed.isf", 1)
         If IsNothing(GovUsers) Then
             ToConsole("Could not retrieve Government Users", ConsoleColor.DarkRed)
             Return False
@@ -271,7 +271,7 @@ Public Class IMEX
         Return True
     End Function
 
-    Function LoadUsers(ISFDir As String, Category As Integer) As User()
+    Function LoadUsers(ISFDir As String, Category As Integer) As IMEXUser()
 
         'OPEN THE ISF
         Try
@@ -283,7 +283,7 @@ Public Class IMEX
 
         Dim Counter As Integer = 1
         Dim TempStringHolder As String
-        Dim Users(0) As User
+        Dim Users(0) As IMEXUser
 
         'READ THE FILE
         While Not EOF(1)
@@ -292,7 +292,7 @@ Public Class IMEX
                 ReDim Preserve Users(Counter - 1)
 
                 'ADD THE USER
-                Users(Counter - 1) = New User(TempStringHolder.Replace("USER" & Counter & ":", ""), Category, Calculator)
+                Users(Counter - 1) = New IMEXUser(TempStringHolder.Replace("USER" & Counter & ":", ""), Category, Calculator)
 
                 'LOG IT
                 ToLog("INFO: Loaded user " & Counter & " which is " & Users(Counter - 1).ID & " and has an income of " & (Users(Counter - 1).TaxInfo.FederalIncome - Users(Counter - 1).EI).ToString("N0") & "p")
@@ -309,8 +309,8 @@ Public Class IMEX
         'THE NEW EMERGENCY LOAD USERS FUNCTION FROM LEGO CITY
     End Function
 
-    Sub Tax(Users As User())
-        For Each Tipillo As User In Users
+    Sub Tax(Users As IMEXUser())
+        For Each Tipillo As IMEXUser In Users
             'Tax
             Try
                 Tipillo.Tax()
@@ -330,8 +330,8 @@ Public Class IMEX
 
     End Sub
 
-    Sub Payday(Users As User())
-        For Each tipillo As User In Users
+    Sub Payday(Users As IMEXUser())
+        For Each tipillo As IMEXUser In Users
             Try
                 tipillo.Pay()
                 ToLog("INFO: Payed out " & tipillo.ID & "'s Income (" & tipillo.Income & ")")
@@ -365,11 +365,11 @@ Public Class IMEX
         FileClose(50)
     End Sub
 
-    Public Function getName() As String Implements SmokeSignalExtension.getName
+    Public Function getName() As String Implements ISmokeSignalExtension.GetName
         Return EXTENSION_NAME
     End Function
 
-    Public Function getVersion() As String Implements SmokeSignalExtension.getVersion
+    Public Function getVersion() As String Implements ISmokeSignalExtension.GetVersion
         Return EXTENSION_VERS
     End Function
 End Class

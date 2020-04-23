@@ -1,16 +1,10 @@
-﻿Imports BasicRender
+﻿''' <summary>General Utilities for SmokeSignal</summary>
+Public Module Utils
 
-''' <summary>
-''' General Utilities for SmokeSignal
-''' </summary>
-Public Class Utils
-
-    ''' <summary>
-    ''' Prints the requested text to the console
-    ''' </summary>
+    ''' <summary>Prints the requested text to the console</summary>
     ''' <param name="ConsoleMSG">The message to the console</param>
     ''' <param name="ConsColor">Color u want to do it in</param>
-    Public Shared Sub ToConsole(ByVal ConsoleMSG As String, Optional ConsColor As ConsoleColor = ConsoleColor.Gray)
+    Public Sub ToConsole(ByVal ConsoleMSG As String, Optional ConsColor As ConsoleColor = ConsoleColor.Gray)
         SetPos(0, 29)
         Dim origColor = Console.ForegroundColor
         Color(ConsColor)
@@ -19,12 +13,10 @@ Public Class Utils
         AddToFile("ViBEServer.log", "[" & DateTime.Now.ToString & "] " & ConsoleMSG)
     End Sub
 
-    ''' <summary>
-    ''' Prints the requested text to the console
-    ''' </summary>
+    ''' <summary>Prints the requested text to the console</summary>
     ''' <param name="ConsoleMSG">Message</param>
     ''' <param name="Ex">Exception</param>
-    Public Shared Sub ErrorToConsole(ByVal ConsoleMSG As String, Ex As Exception)
+    Public Sub ErrorToConsole(ByVal ConsoleMSG As String, Ex As Exception)
         SetPos(0, 29)
         Console.ForegroundColor = ConsoleColor.Red
         Console.WriteLine("-------------------------------------------------------------------------------")
@@ -39,40 +31,34 @@ Public Class Utils
         Console.ForegroundColor = ConsoleColor.Gray
     End Sub
 
-    ''' <summary>
-    ''' Overwrites the specified file with the specified text
-    ''' </summary>
+    ''' <summary>Overwrites the specified file with the specified text</summary>
     ''' <param name="path">Path to the File</param>
     ''' <param name="what">Text to overwrite with</param>
-    Public Shared Sub ToFile(ByVal path As String, ByVal what As String)
+    Public Sub ToFile(ByVal path As String, ByVal what As String)
         FileOpen(50, path, OpenMode.Output)
         PrintLine(50, what)
         FileClose(50)
     End Sub
 
-    ''' <summary>
-    ''' Appends the specified text to the specified file
-    ''' </summary>
+    ''' <summary>Appends the specified text to the specified file</summary>
     ''' <param name="Path"></param>
     ''' <param name="What"></param>
-    Public Shared Sub AddToFile(Path As String, What As String)
+    Public Sub AddToFile(Path As String, What As String)
         FileOpen(50, Path, OpenMode.Append)
         PrintLine(50, What)
         FileClose(50)
     End Sub
 
-    ''' <summary>
-    ''' Returns the first line from a file
-    ''' </summary>
+    ''' <summary>Returns the first line from a file</summary>
     ''' <param name="Path"></param>
-    Public Shared Function ReadFromFile(Path As String) As String
+    Public Function ReadFromFile(Path As String) As String
         FileOpen(50, Path, OpenMode.Input)
         Dim TheReturn As String = LineInput(50)
         FileClose(50)
         Return TheReturn
     End Function
 
-    Public Shared Sub Spinner(left As Integer, top As Integer)
+    Public Sub Spinner(left As Integer, top As Integer)
         Static SpinnerPos As Integer
         If IsNothing(SpinnerPos) Then SpinnerPos = 0
 
@@ -89,21 +75,11 @@ Public Class Utils
                 Echo("\")
                 SpinnerPos = -1
         End Select
-        SpinnerPos = SpinnerPos + 1
+        SpinnerPos += 1
 
         SetPos(left, top)
 
     End Sub
 
-    ''' <summary>
-    ''' Returns the address of the file in a User's Directory
-    ''' </summary>
-    ''' <param name="ID"></param>
-    ''' <param name="File"></param>
-    ''' <returns></returns>
-    Public Shared Function UserFile(ID As String, File As String)
-        Return UMSWEBDir & "\SSH\USERS\" & ID & "\" & File
-    End Function
 
-
-End Class
+End Module

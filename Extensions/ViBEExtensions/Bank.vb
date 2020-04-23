@@ -32,7 +32,7 @@ Public Class Bank
             Case "C"
                 Try
                     ToConsole("Attempting to close (" & BNKID & ")'s (" & BNKBNK & ") account.")
-                    FileOpen(3, UMSWEBDir & "\SSH\USERS\" & BNKID & "\" & BNKBNK & "\Balance.dll", OpenMode.Input)
+                    FileOpen(3, UMSWEB_DIR & "\SSH\USERS\" & BNKID & "\" & BNKBNK & "\Balance.dll", OpenMode.Input)
                     Dim BNKBAL As Long = LineInput(3)
                     ToConsole("Bank balance is currently (" & BNKBAL & ")")
                     FileClose(3)
@@ -42,7 +42,7 @@ Public Class Bank
                     End If
 
                     ToConsole("Deleting Folder")
-                    Directory.Delete(UMSWEBDir & "\SSH\USERS\" & BNKID & "\" & BNKBNK, True)
+                    Directory.Delete(UMSWEB_DIR & "\SSH\USERS\" & BNKID & "\" & BNKBNK, True)
                     ToConsole("KK Done!")
                     Return "S"
                 Catch ex As Exception
@@ -53,14 +53,14 @@ Public Class Bank
             Case "O"
                 Try
                     ToConsole("Attempting to open (" & BNKID & ")'s (" & BNKBNK & ") account.")
-                    Directory.CreateDirectory(UMSWEBDir & "\SSH\USERS\" & BNKID & "\" & BNKBNK)
-                    Directory.CreateDirectory(UMSWEBDir & "\SSH\USERS\" & BNKID & "\" & BNKBNK & "\CHECKS")
+                    Directory.CreateDirectory(UMSWEB_DIR & "\SSH\USERS\" & BNKID & "\" & BNKBNK)
+                    Directory.CreateDirectory(UMSWEB_DIR & "\SSH\USERS\" & BNKID & "\" & BNKBNK & "\CHECKS")
 
-                    FileOpen(1, UMSWEBDir & "\SSH\USERS\" & BNKID & "\" & BNKBNK & "\BALANCE.dll", OpenMode.Output)
+                    FileOpen(1, UMSWEB_DIR & "\SSH\USERS\" & BNKID & "\" & BNKBNK & "\BALANCE.dll", OpenMode.Output)
                     PrintLine(1, "0000")
                     FileClose(1)
 
-                    FileOpen(1, UMSWEBDir & "\SSH\USERS\" & BNKID & "\" & BNKBNK & "\Log.log", OpenMode.Output)
+                    FileOpen(1, UMSWEB_DIR & "\SSH\USERS\" & BNKID & "\" & BNKBNK & "\Log.log", OpenMode.Output)
                     PrintLine(1, "[" & DateTime.Now.ToString & "] Account Created on ViBE")
                     FileClose(1)
                     Return "S"
@@ -71,8 +71,8 @@ Public Class Bank
 
             Case "L"
                 Try
-                    ToConsole("Copying " & UMSWEBDir & "\SSH\USERS\" & BNKID & "\" & BNKBNK & "\Log.log to " & WEBDir & "\LOGS\" & BNKID & BNKBNK & ".log...")
-                    File.Copy(UMSWEBDir & "\SSH\USERS\" & BNKID & "\" & BNKBNK & "\Log.log", WEBDir & "\LOGS\" & BNKID & BNKBNK & ".log", True)
+                    ToConsole("Copying " & UMSWEB_DIR & "\SSH\USERS\" & BNKID & "\" & BNKBNK & "\Log.log to " & WEB_DIR & "\LOGS\" & BNKID & BNKBNK & ".log...")
+                    File.Copy(UMSWEB_DIR & "\SSH\USERS\" & BNKID & "\" & BNKBNK & "\Log.log", WEB_DIR & "\LOGS\" & BNKID & BNKBNK & ".log", True)
                     ToConsole("Done!")
                     Return "S"
                 Catch ex As Exception

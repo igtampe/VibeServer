@@ -62,11 +62,11 @@ Public Class Contractus
     Private Shared Function ReadAllContracts() As String
         Dim AllContracts(0) As String
         ToConsole("trying to read all contracts")
-        If Not File.Exists(String.Concat(UMSWEBDir, "\SSH\Contracts.txt")) Then
+        If Not File.Exists(String.Concat(UMSWEB_DIR, "\SSH\Contracts.txt")) Then
             Return "N"
         End If
 
-        FileOpen(1, String.Concat(UMSWEBDir, "\SSH\Contracts.txt"), OpenMode.Input)
+        FileOpen(1, String.Concat(UMSWEB_DIR, "\SSH\Contracts.txt"), OpenMode.Input)
         Dim I As Integer = 0
         While Not EOF(1)
             ReDim Preserve AllContracts(I)
@@ -89,13 +89,13 @@ Public Class Contractus
     ''' <returns></returns>
     Private Shared Function ConDetails(Details As String) As String
         ToConsole("Retrieving details from contract #" & Details)
-        If Not File.Exists(UMSWEBDir & "\SSH\CONTRACTS\" & Details & ".txt") Then
+        If Not File.Exists(UMSWEB_DIR & "\SSH\CONTRACTS\" & Details & ".txt") Then
             Return "E"
             ToConsole("Looks like it doesn't exist")
         End If
 
         Try
-            Return ReadFromFile(UMSWEBDir & "\SSH\CONTRACTS\" & Details & ".txt")
+            Return ReadFromFile(UMSWEB_DIR & "\SSH\CONTRACTS\" & Details & ".txt")
         Catch ex As Exception
             Return "E"
             ErrorToConsole("w o o p s", ex)
@@ -111,11 +111,11 @@ Public Class Contractus
     Private Shared Function ReadUserContracts(Notifmsg As String) As String
         Dim notifarray(0) As String
         ToConsole("trying to READ from " & Notifmsg & "'s Contracts")
-        If Not File.Exists(String.Concat(UMSWEBDir, "\SSH\USERS\", Notifmsg, "\Contracts.txt")) Then
+        If Not File.Exists(String.Concat(UMSWEB_DIR, "\SSH\USERS\", Notifmsg, "\Contracts.txt")) Then
             Return "N"
         End If
 
-        FileOpen(1, String.Concat(UMSWEBDir, "\SSH\USERS\", Notifmsg, "\Contracts.txt"), OpenMode.Input)
+        FileOpen(1, String.Concat(UMSWEB_DIR, "\SSH\USERS\", Notifmsg, "\Contracts.txt"), OpenMode.Input)
         Dim I As Integer = 0
         While Not EOF(1)
             ReDim Preserve notifarray(I)
@@ -145,14 +145,14 @@ Public Class Contractus
         Dim ContractID As Integer
         ContractID = 0
 
-        While (File.Exists(UMSWEBDir & "\SSH\Contracts\" & ContractID & ".txt"))
+        While (File.Exists(UMSWEB_DIR & "\SSH\Contracts\" & ContractID & ".txt"))
             ContractID += 1
         End While
 
         ToConsole("This contract will be Contract #" & ContractID)
 
-        AddToFile(String.Concat(UMSWEBDir, "\SSH\Contracts.txt"), ContractID & "~" & ConMSGSplit(0) & "~-1~Uninitialized~Uninitialized")
-        ToFile(UMSWEBDir & "\SSH\Contracts\" & ContractID & ".txt", ConMSGSplit(1))
+        AddToFile(String.Concat(UMSWEB_DIR, "\SSH\Contracts.txt"), ContractID & "~" & ConMSGSplit(0) & "~-1~Uninitialized~Uninitialized")
+        ToFile(UMSWEB_DIR & "\SSH\Contracts\" & ContractID & ".txt", ConMSGSplit(1))
 
         ToConsole("OK Done")
         Return "S"
@@ -170,14 +170,14 @@ Public Class Contractus
         ConMSGSplit = ConMSG.Split(";")
         ToConsole("Oh fuck time to add a bid AAAAAAAAAAAAAA")
 
-        If Not File.Exists(String.Concat(UMSWEBDir, "\SSH\Contracts.txt")) Then
+        If Not File.Exists(String.Concat(UMSWEB_DIR, "\SSH\Contracts.txt")) Then
             Return "E"
         End If
 
         ToConsole("Trying to Find Contract #" & ConMSGSplit(0))
 
-        FileOpen(1, String.Concat(UMSWEBDir, "\SSH\Contracts.txt"), OpenMode.Input)
-        FileOpen(2, String.Concat(UMSWEBDir, "\SSH\TempContracts.txt"), OpenMode.Output)
+        FileOpen(1, String.Concat(UMSWEB_DIR, "\SSH\Contracts.txt"), OpenMode.Input)
+        FileOpen(2, String.Concat(UMSWEB_DIR, "\SSH\TempContracts.txt"), OpenMode.Output)
         Dim CurrentLine() As String
         Dim woops As Boolean = True
         While Not EOF(1)
@@ -208,11 +208,11 @@ Public Class Contractus
         FileClose(2)
 
         If woops Then
-            File.Delete(String.Concat(UMSWEBDir, "\SSH\TempContracts.txt"))
+            File.Delete(String.Concat(UMSWEB_DIR, "\SSH\TempContracts.txt"))
             Return "E"
         Else
-            File.Delete(String.Concat(UMSWEBDir, "\SSH\Contracts.txt"))
-            File.Move(String.Concat(UMSWEBDir, "\SSH\TempContracts.txt"), String.Concat(UMSWEBDir, "\SSH\Contracts.txt"))
+            File.Delete(String.Concat(UMSWEB_DIR, "\SSH\Contracts.txt"))
+            File.Move(String.Concat(UMSWEB_DIR, "\SSH\TempContracts.txt"), String.Concat(UMSWEB_DIR, "\SSH\Contracts.txt"))
             Return "S"
         End If
 
@@ -229,14 +229,14 @@ Public Class Contractus
         ' 0           1
         ToConsole("Oh fuck time to add a bid AAAAAAAAAAAAAA")
 
-        If Not File.Exists(String.Concat(UMSWEBDir, "\SSH\Contracts.txt")) Then
+        If Not File.Exists(String.Concat(UMSWEB_DIR, "\SSH\Contracts.txt")) Then
             Return "E"
         End If
 
         ToConsole("Trying to Find Contract #" & ConMSGSplit(0))
 
-        FileOpen(1, String.Concat(UMSWEBDir, "\SSH\Contracts.txt"), OpenMode.Input)
-        FileOpen(2, String.Concat(UMSWEBDir, "\SSH\TempContracts.txt"), OpenMode.Output)
+        FileOpen(1, String.Concat(UMSWEB_DIR, "\SSH\Contracts.txt"), OpenMode.Input)
+        FileOpen(2, String.Concat(UMSWEB_DIR, "\SSH\TempContracts.txt"), OpenMode.Output)
         Dim CurrentLine() As String
         Dim TransferedContract(0) As String
         Dim woops As Boolean = True
@@ -257,17 +257,17 @@ Public Class Contractus
         FileClose(2)
 
         If woops Then
-            File.Delete(String.Concat(UMSWEBDir, "\SSH\TempContracts.txt"))
+            File.Delete(String.Concat(UMSWEB_DIR, "\SSH\TempContracts.txt"))
             Return "E"
         Else
-            File.Delete(String.Concat(UMSWEBDir, "\SSH\Contracts.txt"))
-            File.Move(String.Concat(UMSWEBDir, "\SSH\TempContracts.txt"), String.Concat(UMSWEBDir, "\SSH\Contracts.txt"))
+            File.Delete(String.Concat(UMSWEB_DIR, "\SSH\Contracts.txt"))
+            File.Move(String.Concat(UMSWEB_DIR, "\SSH\TempContracts.txt"), String.Concat(UMSWEB_DIR, "\SSH\Contracts.txt"))
 
             ToConsole("OK now that we've removed it its time to add it to the user's coso")
-            If File.Exists(String.Concat(UMSWEBDir, "\SSH\Users\" & ConMSGSplit(1) & "\Contracts.txt")) Then
-                FileOpen(1, String.Concat(UMSWEBDir, "\SSH\Users\" & ConMSGSplit(1) & "\Contracts.txt"), OpenMode.Append)
+            If File.Exists(String.Concat(UMSWEB_DIR, "\SSH\Users\" & ConMSGSplit(1) & "\Contracts.txt")) Then
+                FileOpen(1, String.Concat(UMSWEB_DIR, "\SSH\Users\" & ConMSGSplit(1) & "\Contracts.txt"), OpenMode.Append)
             Else
-                FileOpen(1, String.Concat(UMSWEBDir, "\SSH\Users\" & ConMSGSplit(1) & "\Contracts.txt"), OpenMode.Output)
+                FileOpen(1, String.Concat(UMSWEB_DIR, "\SSH\Users\" & ConMSGSplit(1) & "\Contracts.txt"), OpenMode.Output)
             End If
 
             PrintLine(1, String.Join("~", TransferedContract))
@@ -287,14 +287,14 @@ Public Class Contractus
         ' 0           1
         ToConsole("Oh fuck time to add a bid AAAAAAAAAAAAAA")
 
-        If Not File.Exists(String.Concat(UMSWEBDir, "\SSH\Users\" & ConMSGSplit(1) & "\Contracts.txt")) Then
+        If Not File.Exists(String.Concat(UMSWEB_DIR, "\SSH\Users\" & ConMSGSplit(1) & "\Contracts.txt")) Then
             Return "E"
         End If
 
         ToConsole("Trying to Find Contract #" & ConMSGSplit(0))
 
-        FileOpen(1, String.Concat(UMSWEBDir, "\SSH\Users\" & ConMSGSplit(1) & "\Contracts.txt"), OpenMode.Input)
-        FileOpen(2, String.Concat(UMSWEBDir, "\SSH\Users\" & ConMSGSplit(1) & "\TempContracts.txt"), OpenMode.Output)
+        FileOpen(1, String.Concat(UMSWEB_DIR, "\SSH\Users\" & ConMSGSplit(1) & "\Contracts.txt"), OpenMode.Input)
+        FileOpen(2, String.Concat(UMSWEB_DIR, "\SSH\Users\" & ConMSGSplit(1) & "\TempContracts.txt"), OpenMode.Output)
         Dim CurrentLine() As String
         Dim woops As Boolean = True
         While Not EOF(1)
@@ -313,11 +313,11 @@ Public Class Contractus
         FileClose(2)
 
         If woops Then
-            File.Delete(String.Concat(UMSWEBDir, "\SSH\Users" & ConMSGSplit(1) & "\TempContracts.txt"))
+            File.Delete(String.Concat(UMSWEB_DIR, "\SSH\Users" & ConMSGSplit(1) & "\TempContracts.txt"))
             Return "E"
         Else
-            File.Delete(String.Concat(UMSWEBDir, "\SSH\Users\" & ConMSGSplit(1) & "\Contracts.txt"))
-            File.Move(String.Concat(UMSWEBDir, "\SSH\Users\" & ConMSGSplit(1) & "\TempContracts.txt"), String.Concat(UMSWEBDir, "\SSH\Users\" & ConMSGSplit(1) & "\Contracts.txt"))
+            File.Delete(String.Concat(UMSWEB_DIR, "\SSH\Users\" & ConMSGSplit(1) & "\Contracts.txt"))
+            File.Move(String.Concat(UMSWEB_DIR, "\SSH\Users\" & ConMSGSplit(1) & "\TempContracts.txt"), String.Concat(UMSWEB_DIR, "\SSH\Users\" & ConMSGSplit(1) & "\Contracts.txt"))
             ToConsole("OK we should be good to go")
             Return "S"
         End If
