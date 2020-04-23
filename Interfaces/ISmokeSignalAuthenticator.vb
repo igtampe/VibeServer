@@ -10,7 +10,7 @@ Public Interface ISmokeSignalAuthenticator
     Function GetAllUsers() As ArrayList
 
     ''' <summary>Register a new user</summary>
-    Function RegistierUser(Username As String, Password As String) As String
+    Function RegisterUser(Username As String, Password As String) As String
 
     ''' <summary>Parses an Authenticator Command</summary>
     Function Parse(ClientMSG As String) As String
@@ -20,5 +20,6 @@ Public Interface ISmokeSignalAuthenticator
 
     ''' <summary>Gets version of this authenticator</summary>
     Function GetVersion() As String
+
 
 End Interface

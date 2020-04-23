@@ -15,16 +15,10 @@ Module Config
     'Ohter Global Variables
     Public UMSWEB_DIR As String
     Public WEB_DIR As String
+    Public VAuthenticator As ViBEAuthenticator
 
-    Public Sub RegisterAuthenticator()
 
-        'Register your authenticator here.
-        Authenticator = New DummyAuthenticator("DummyAuthenticatorUser.txt")
-
-    End Sub
-
-    Public Sub RegisterAllExtensions()
-
+    Public Sub RegisterGlobalVariables()
         'Get ViBE Global Variables
         If (File.Exists("Settings1.cfg")) Then
             'Set Settings
@@ -37,10 +31,25 @@ Module Config
             ToConsole("Could Not Find Settings.cfg in current directory, rendered default one", ConsoleColor.Yellow)
         End If
 
+        VAuthenticator = New ViBEAuthenticator()
+
+    End Sub
+
+    Public Sub RegisterAuthenticator()
+
+        'Register your authenticator here.
+        Authenticator = VAuthenticator
+
+    End Sub
+
+    Public Sub RegisterAllExtensions()
+
+        Dim ViBESuperExtension = New ViBEExtension()
+        Dim IMEX As IMEX = New IMEX()
 
         'Add your extensions. When creating the extension, the extension should initialize
-        Extensions = {New DummyExtension(), New ViBEExtension(), New LBL(), New IMEX()}
-        AuthenticatedExtensions = {New DummyAuthenticatedExtension()}
+        Extensions = {New DummyExtension(), ViBESuperExtension, New LBL(), IMEX}
+        AuthenticatedExtensions = {New DummyAuthenticatedExtension(), ViBESuperExtension, IMEX}
 
     End Sub
 

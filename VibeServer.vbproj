@@ -53,7 +53,12 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Authenticators\ViBEAuth\VibeUserComponents\ViBEBank.vb" />
     <Compile Include="Authenticators\DummyAuthenticator.vb" />
+    <Compile Include="Authenticators\ViBEAuth\ViBEAuthenticator.vb" />
+    <Compile Include="Authenticators\ViBEAuth\ViBEUser.vb" />
+    <Compile Include="Authenticators\ViBEAuth\VibeUserComponents\ViBECheckbook.vb" />
+    <Compile Include="Authenticators\ViBEAuth\VibeUserComponents\ViBENotificationHandler.vb" />
     <Compile Include="Config.vb" />
     <Compile Include="Extensions\DummyAuthenticatedExtension.vb" />
     <Compile Include="Extensions\IMEX\IMEX.vb" />

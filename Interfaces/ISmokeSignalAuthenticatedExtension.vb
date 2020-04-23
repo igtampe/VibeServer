@@ -1,6 +1,6 @@
 ﻿''' <summary>An interface to develop extensions </summary>
 Public Interface ISmokeSignalAuthenticatedExtension
-    Inherits ISmokeSignalExtension
+    Inherits ISmokeSignalAuthenticatedExtension
 
     ''' <summary>Returns the response to the specified parsable command.</summary>
     ''' <param name="Command"></param>

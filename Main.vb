@@ -12,7 +12,7 @@ Public Module Main
     Public Authenticator As ISmokeSignalAuthenticator
 
     ''' <summary>All Registered SmokeSignal Non-Authenticated Extensions</summary>
-    Public Extensions As ISmokeSignalExtension()
+    Public Extensions As ISmokeSignalAuthenticatedExtension()
 
     ''' <summary>All Registered SmokeSignal Authenticated Extensions</summary>
     Public AuthenticatedExtensions As ISmokeSignalAuthenticatedExtension()
@@ -40,6 +40,9 @@ Public Module Main
             ToFile("SmokeSettings.cfg", IP & "," & Port)
             ToConsole("Could Not Find Settings.cfg in current directory, rendered default one", ConsoleColor.Yellow)
         End If
+
+        'Register Global Variables
+        RegisterGlobalVariables()
 
         'Registering Authenticator
         RegisterAuthenticator()
@@ -134,7 +137,7 @@ Public Module Main
         Dim Result As String
 
         'Attempt parsing with Non-Authenticated extensions
-        For Each SmokeSignal As ISmokeSignalExtension In Extensions
+        For Each SmokeSignal As ISmokeSignalAuthenticatedExtension In Extensions
             Result = SmokeSignal.Parse(ClientMSG)
             If Not String.IsNullOrEmpty(Result) Then Return Result
         Next

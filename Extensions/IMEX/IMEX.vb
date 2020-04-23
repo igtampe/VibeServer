@@ -1,10 +1,9 @@
-﻿Imports Utils
-Imports TaxCalc
+﻿Imports TaxCalc
 Imports System.IO
 Imports System.Collections
 
 Public Class IMEX
-    Implements ISmokeSignalExtension
+    Implements ISmokeSignalAuthenticatedExtension
 
     Public Const EXTENSION_NAME = "IncomeMan Express"
     Public Const EXTENSION_VERS = "2.1"
@@ -201,13 +200,30 @@ Public Class IMEX
         SouthOsten = New IMEXUser("86705", 2, Calculator)
     End Sub
 
-    Public Sub Tick() Implements ISmokeSignalExtension.Tick
+    Public Sub Tick() Implements ISmokeSignalAuthenticatedExtension.Tick
         'Check if it's the first or 15th of the month, and make sure we haven't already done this cosita
         'That will be implemented over in 1.1 because first we need to test this.
     End Sub
 
-    Public Function Parse(Command As String) As String Implements ISmokeSignalExtension.Parse
+    Public Function Parse(Command As String) As String Implements ISmokeSignalAuthenticatedExtension.Parse
         If IsNothing(Calculator) Then Return ""
+        If Command.StartsWith("IMEX") Then
+
+            ToConsole("Hello yes, IMEX", ConsoleColor.DarkCyan)
+            Dim IMEXCommand As String() = Command.Split(",")
+            If IMEXCommand(1).ToUpper = "TAXVER" Then Return Calculator.TaxInfoID
+
+        End If
+        Return Nothing
+    End Function
+
+    Public Function Parse(User As ISmokeSignalUser, Command As String) As String Implements ISmokeSignalAuthenticatedExtension.Parse
+        If IsNothing(Calculator) Then Return ""
+
+        Dim VUserType As ViBEUserType = TryCast(User.GetUserType, ViBEUserType)
+        If IsNothing(VUserType) Then Return ""
+        If VUserType.AuthorityLevel < 4 Then Return ""
+
         If Command.StartsWith("IMEX") Then
 
             ToConsole("Hello yes, IMEX", ConsoleColor.DarkCyan)
@@ -215,7 +231,6 @@ Public Class IMEX
 
             'Basic checks and initialization 
             If IMEXCommand.Count < 2 Then Return ""
-            If IMEXCommand(1).ToUpper = "TAXVER" Then Return Calculator.TaxInfoID
 
             If Not Initialize() Then Return "IE"
 
@@ -231,6 +246,9 @@ Public Class IMEX
                     Return Nothing
             End Select
 
+            'Ask the VibeAuthenticator to reload
+            VAuthenticator.ReloadAllUsers()
+
             'If the command to tax or pay was not sent, this will already not be executed
 
             If ErrorList.Count = 0 Then Return "S"
@@ -245,6 +263,8 @@ Public Class IMEX
         Else
             Return Nothing
         End If
+
+
     End Function
 
     Private Function Initialize() As Boolean
@@ -261,7 +281,7 @@ Public Class IMEX
             Return False
         End If
 
-        GovUsers = LoadUsers(UMSWEB_DIR & "\ssh\incomeman\NonTaxed.isf", 1)
+        GovUsers = LoadUsers(UMSWEB_DIR & "\ssh\incomeman\NonTaxed.isf", 2)
         If IsNothing(GovUsers) Then
             ToConsole("Could not retrieve Government Users", ConsoleColor.DarkRed)
             Return False
@@ -365,11 +385,12 @@ Public Class IMEX
         FileClose(50)
     End Sub
 
-    Public Function getName() As String Implements ISmokeSignalExtension.GetName
+    Public Function getName() As String Implements ISmokeSignalAuthenticatedExtension.GetName
         Return EXTENSION_NAME
     End Function
 
-    Public Function getVersion() As String Implements ISmokeSignalExtension.GetVersion
+    Public Function getVersion() As String Implements ISmokeSignalAuthenticatedExtension.GetVersion
         Return EXTENSION_VERS
     End Function
+
 End Class

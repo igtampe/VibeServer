@@ -14,6 +14,7 @@ Public Class DummyAuthenticator
     Public ReadOnly Anonymous As DummyUserType
     Public ReadOnly AnonymousUser As DummyUser
 
+
     Public Sub New(UserFile As String)
 
         Me.UserFile = UserFile
@@ -52,7 +53,7 @@ Public Class DummyAuthenticator
         Return AllUsers
     End Function
 
-    Public Function RegistierUser(Username As String, Password As String) As String Implements ISmokeSignalAuthenticator.RegistierUser
+    Public Function RegisterUser(Username As String, Password As String) As String Implements ISmokeSignalAuthenticator.RegisterUser
 
         Dim NewUser As DummyUser = New DummyUser(Username, Password, Dummy)
 
@@ -98,7 +99,7 @@ Public Class DummyAuthenticator
 
         Select Case DummyAuthCommand(1)
             Case "REG"
-                Return RegistierUser(DummyAuthCommand(2), DummyAuthCommand(3))
+                Return RegisterUser(DummyAuthCommand(2), DummyAuthCommand(3))
         End Select
 
         Return ""

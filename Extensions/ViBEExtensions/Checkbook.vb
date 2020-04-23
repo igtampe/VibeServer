@@ -1,5 +1,4 @@
-﻿Imports Utils
-Imports System.IO
+﻿Imports System.IO
 
 ''' <summary>
 ''' Checkbook 2000 Extension

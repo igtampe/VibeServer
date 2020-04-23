@@ -13,7 +13,7 @@ Public Class DummyAuthenticatedExtension
         ''additionally if you need to setup any arrays or cosas asi, now is the time.
     End Sub
 
-    Public Function Parse(Command As String) As String Implements ISmokeSignalExtension.Parse
+    Public Function Parse(Command As String) As String Implements ISmokeSignalAuthenticatedExtension.Parse
 
         'Because ISmokeSignalAuthenticatedExtension inherits ISmokeSignalExtension, your extension can have both Authenticated *and* NonAuthenticated portions
         'However, this authenticated extension *requires* authenticated, so this should stop you from adding this extension to the non-authenticated extensions array.

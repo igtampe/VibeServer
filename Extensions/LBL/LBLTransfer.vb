@@ -1,5 +1,4 @@
 ﻿Imports System.Collections
-Imports Utils
 Public Class LBLTransfer
 
     Public Filename As String

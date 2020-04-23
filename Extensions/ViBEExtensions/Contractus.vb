@@ -1,9 +1,6 @@
-﻿Imports Utils
-Imports System.IO
+﻿Imports System.IO
 
-''' <summary>
-''' Contractus Expansion
-''' </summary>
+''' <summary>Contractus Expansion</summary>
 Public Class Contractus
 
     ''' <summary>
