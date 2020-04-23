@@ -22,15 +22,15 @@ Public Class ViBECheckbook
     End Sub
 
     Public Sub AddItem(Message As String)
-        ToConsole("Adding Notification '" & Message & "'")
+        ToConsole("Adding Item '" & Message & "'")
         AllItems.Add(New ViBECheckbookItem(Message))
-        SaveNotifs()
+        SaveItems()
     End Sub
 
     Public Sub RemoveItems(Index As Integer)
         ToConsole("Removing Item " & Index)
         AllItems.RemoveAt(Index)
-        SaveNotifs()
+        SaveItems()
     End Sub
 
     Public Sub ExecuteItem(Index As Integer, CurrentUserBankString As String)
@@ -49,6 +49,7 @@ Public Class ViBECheckbook
         Dim CurrentUserBank As ViBEBank
         Dim OtherUserBank As ViBEBank
 
+        'Get the banks for both parties
         Select Case CurrentUserBankString
             Case "UMSNB"
                 CurrentUserBank = TiedUser.UMSNB
@@ -77,14 +78,17 @@ Public Class ViBECheckbook
             CurrentUserBank.SendMoney(OtherUserBank, CurrentItem.Amount)
         End If
 
+        'Remove the tiem
+        RemoveItems(Index)
+
     End Sub
 
 
-    Public Function GetNotifs() As String
+    Public Function GetChecks() As String
         Return String.Join("`", AllItems.ToArray)
     End Function
 
-    Public Sub SaveNotifs()
+    Public Sub SaveItems()
         ToConsole("Saving Notifications")
         If File.Exists(CheckFile) Then File.Delete(CheckFile)
 

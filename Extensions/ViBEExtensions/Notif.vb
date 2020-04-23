@@ -1,5 +1,5 @@
 ﻿''' <summary>Notifications Expansion</summary>
-Public Module ViBENotifExpansion
+Public Module Notif
     ''' <summary>Notification Subsystem</summary>
     Public Function Notifications(ByRef VUser As ViBEUser, notifmsg As String) As String
         Try

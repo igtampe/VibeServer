@@ -1,5 +1,4 @@
-﻿Imports Checkbook
-Imports Contractus
+﻿Imports Contractus
 Imports Core
 Imports EzTax
 
@@ -16,6 +15,11 @@ Public Class ViBEExtension
     End Sub
 
     Public Function Parse(ClientMSG As String) As String Implements ISmokeSignalAuthenticatedExtension.Parse
+
+        If ClientMSG = "CONNECTED" Then
+            ToConsole("Classic ping packet received! Replying...")
+            Return "You've connected to the ViBE Server! Congrats!"
+        End If
 
         If ClientMSG = "DIR" Then
             'DIR
@@ -48,14 +52,24 @@ Public Class ViBEExtension
             If VUser.Equals(Tipillo) Then VUser = Tipillo
         Next
 
+        If Command = "CONNECTED" Then
+            ToConsole("Classic packet, but authenticated. Replying...")
+            Return "You've connected to the ViBE Server, and successfully authenticated as " & VUser.ToString & " Congrats!"
+        End If
+
         If (Command.StartsWith("SM")) Then
             'SM,UMSNB,33118\UMSNB,5000
-            Return SM(Command.Remove(0, 2))
+            Return SM(VUser, Command.Remove(0, 2))
 
         ElseIf (Command.StartsWith("CP")) Then
             '57174|4640|CP4641
-            VUser.ChangePin(Command.Remove(0, 2))
-            Return "S"
+            Try
+                VUser.ChangePin(Command.Remove(0, 2))
+                Return "S"
+            Catch ex As Exception
+                ErrorToConsole("Could not update PIN", ex)
+                Return "E"
+            End Try
 
         ElseIf Command.StartsWith("NOTIF") Then
             '57174|4640|NOTIFREMO4
@@ -67,10 +81,11 @@ Public Class ViBEExtension
 
         ElseIf Command.StartsWith("CHCKBK") Then
             'Checkbook 2000 Subsystem
-            Return CHCKBK(Command.Replace("CHCKBK", ""))
+            Return CHCKBK(VUser, Command.Replace("CHCKBK", ""))
+
         ElseIf Command.StartsWith("NTA") Then
-            'Non-Taxed Add
-            Return NonTaxAdd(Command.Replace("NTA", ""))
+            '57174|4640|NTA,57174,5000
+            Return NonTaxAdd(VUser, Command.Replace("NTA", ""))
 
         ElseIf Command.StartsWith("EZT") Then
             'EzTax
@@ -78,7 +93,7 @@ Public Class ViBEExtension
 
         ElseIf Command.StartsWith("CON") Then
             'Contractus
-            Return CON(Command.Replace("CON", ""))
+            Return CON(VUser, Command.Replace("CON", ""))
         Else
 
         End If

@@ -48,8 +48,8 @@ Module Config
         Dim IMEX As IMEX = New IMEX()
 
         'Add your extensions. When creating the extension, the extension should initialize
-        Extensions = {New DummyExtension(), ViBESuperExtension, New LBL(), IMEX}
-        AuthenticatedExtensions = {New DummyAuthenticatedExtension(), ViBESuperExtension, IMEX}
+        Extensions = {ViBESuperExtension, New LBL(), IMEX}
+        AuthenticatedExtensions = {ViBESuperExtension, IMEX}
 
     End Sub
 

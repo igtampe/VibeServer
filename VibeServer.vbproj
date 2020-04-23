@@ -68,7 +68,7 @@
     <Compile Include="Extensions\ViBEExtensions\Contractus.vb" />
     <Compile Include="Extensions\ViBEExtensions\Core.vb" />
     <Compile Include="Extensions\ViBEExtensions\EzTax.vb" />
-    <Compile Include="Extensions\ViBEExtensions\ViBENotifExpansion.vb" />
+    <Compile Include="Extensions\ViBEExtensions\Notif.vb" />
     <Compile Include="Extensions\ViBEExtension.vb" />
     <Compile Include="Interfaces\ISmokeSignalAuthenticatedExtension.vb" />
     <Compile Include="Interfaces\ISmokeSignalAuthenticator.vb" />

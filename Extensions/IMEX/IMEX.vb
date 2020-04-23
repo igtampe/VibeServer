@@ -222,7 +222,10 @@ Public Class IMEX
 
         Dim VUserType As ViBEUserType = TryCast(User.GetUserType, ViBEUserType)
         If IsNothing(VUserType) Then Return ""
-        If VUserType.AuthorityLevel < 4 Then Return ""
+        If VUserType.AuthorityLevel < 4 Then
+            ToConsole(User.GetUsername & " Does not have enough privileges to access IMEX's Tax or Payday functions")
+            Return "E"
+        End If
 
         If Command.StartsWith("IMEX") Then
 

@@ -1,14 +1,12 @@
 ﻿Imports System.IO
 
 ''' <summary>Contractus Expansion</summary>
-Public Class Contractus
+Public Module Contractus
 
-    ''' <summary>
-    ''' Executes Contractus Functions
-    ''' </summary>
+    ''' <summary>Executes Contractus Functions</summary>
     ''' <param name="ConMSG"></param>
     ''' <returns></returns>
-    Public Shared Function CON(ConMSG As String) As String
+    Public Function CON(ByRef Vuser As ViBEUser, ConMSG As String) As String
         ToConsole("Invoking Contractus Subsystem...")
         Try
 
@@ -22,23 +20,23 @@ Public Class Contractus
 
             ElseIf ConMSG.StartsWith("READUSR") Then
                 'Read User Contracts
-                Return ReadUserContracts(ConMSG.Replace("READUSR", ""))
+                Return ReadUserContracts(Vuser)
 
             ElseIf ConMSG.StartsWith("ADDTOALL") Then
                 'Add Contract to all contracts
-                Return AddContractToAll(ConMSG.Replace("ADDTOALL", ""))
+                Return AddContractToAll(Vuser, ConMSG.Replace("ADDTOALL", ""))
 
             ElseIf ConMSG.StartsWith("ADDBID") Then
                 'Add Bid
-                Return AddBid(ConMSG.Replace("ADDBID", ""))
+                Return AddBid(Vuser, ConMSG.Replace("ADDBID", ""))
 
             ElseIf ConMSG.StartsWith("MOVETOUSER") Then
                 'Move Contract
-                Return MoveToUser(ConMSG.Replace("MOVETOUSER", "").Split(";"))
+                Return MoveToUser(Vuser, ConMSG.Replace("MOVETOUSER", "").Split(";"))
 
             ElseIf ConMSG.StartsWith("REMOVE") Then
                 'Remove a contract
-                Return RemoveContract(ConMSG.Replace("REMOVE", "").Split(";"))
+                Return RemoveContract(Vuser, ConMSG.Replace("REMOVE", ""))
 
             Else
                 ToConsole("Unable to parse Contractus Command")
@@ -52,11 +50,8 @@ Public Class Contractus
 
     End Function
 
-    ''' <summary>
-    ''' Returns all contracts
-    ''' </summary>
-    ''' <returns></returns>
-    Private Shared Function ReadAllContracts() As String
+    ''' <summary>Returns all contracts</summary>
+    Private Function ReadAllContracts() As String
         Dim AllContracts(0) As String
         ToConsole("trying to read all contracts")
         If Not File.Exists(String.Concat(UMSWEB_DIR, "\SSH\Contracts.txt")) Then
@@ -79,12 +74,8 @@ Public Class Contractus
         End If
     End Function
 
-    ''' <summary>
-    ''' Returns a contract's details
-    ''' </summary>
-    ''' <param name="Details"></param>
-    ''' <returns></returns>
-    Private Shared Function ConDetails(Details As String) As String
+    ''' <summary>Returns a contract's details</summary>
+    Private Function ConDetails(Details As String) As String
         ToConsole("Retrieving details from contract #" & Details)
         If Not File.Exists(UMSWEB_DIR & "\SSH\CONTRACTS\" & Details & ".txt") Then
             Return "E"
@@ -100,19 +91,14 @@ Public Class Contractus
 
     End Function
 
-    ''' <summary>
-    ''' Returns a User's Contracts
-    ''' </summary>
-    ''' <param name="Notifmsg"></param>
-    ''' <returns></returns>
-    Private Shared Function ReadUserContracts(Notifmsg As String) As String
+    ''' <summary>Returns a User's Contracts</summary>
+    Private Function ReadUserContracts(ByRef VUser As ViBEUser) As String
         Dim notifarray(0) As String
-        ToConsole("trying to READ from " & Notifmsg & "'s Contracts")
-        If Not File.Exists(String.Concat(UMSWEB_DIR, "\SSH\USERS\", Notifmsg, "\Contracts.txt")) Then
-            Return "N"
-        End If
+        ToConsole("trying to READ from " & VUser.ToString & "'s Contracts")
+        If Not File.Exists(VUser.Directory & "Contracts.txt") Then Return "N"
 
-        FileOpen(1, String.Concat(UMSWEB_DIR, "\SSH\USERS\", Notifmsg, "\Contracts.txt"), OpenMode.Input)
+        FileOpen(1, VUser.Directory & "Contracts.txt", OpenMode.Input)
+
         Dim I As Integer = 0
         While Not EOF(1)
             ReDim Preserve notifarray(I)
@@ -129,26 +115,22 @@ Public Class Contractus
         End If
     End Function
 
-    ''' <summary>
-    ''' Add Contract to all contracts
-    ''' </summary>
-    ''' <param name="ConMSG"></param>
-    ''' <returns></returns>
-    Private Shared Function AddContractToAll(ConMSG As String) As String
+    ''' <summary>Add Contract to all contracts</summary>
+    Private Function AddContractToAll(ByRef Vuser As ViBEUser, ConMSG As String) As String
         ToConsole("Attempting to add " & ConMSG & "to all contracts")
-        'Build The Building~57174~Igtampe;Build the Building and make it real good boio pls help
+        'Build The Building;Build the Building and make it real good boio pls help
         Dim ConMSGSplit() As String
         ConMSGSplit = ConMSG.Split(";")
         Dim ContractID As Integer
-        ContractID = 0
 
+        ContractID = 0
         While (File.Exists(UMSWEB_DIR & "\SSH\Contracts\" & ContractID & ".txt"))
             ContractID += 1
         End While
 
         ToConsole("This contract will be Contract #" & ContractID)
+        AddToFile(UMSWEB_DIR & "\SSH\Contracts.txt", String.Join("~", {ContractID, ConMSGSplit(0), Vuser.ID, Vuser.Username, "-1", "Uninitialized", "Uninitialized"}))
 
-        AddToFile(String.Concat(UMSWEB_DIR, "\SSH\Contracts.txt"), ContractID & "~" & ConMSGSplit(0) & "~-1~Uninitialized~Uninitialized")
         ToFile(UMSWEB_DIR & "\SSH\Contracts\" & ContractID & ".txt", ConMSGSplit(1))
 
         ToConsole("OK Done")
@@ -160,12 +142,12 @@ Public Class Contractus
     ''' </summary>
     ''' <param name="ConMSG"></param>
     ''' <returns></returns>
-    Private Shared Function AddBid(ConMSG As String) As String
+    Private Function AddBid(ByRef VUser As ViBEUser, ConMSG As String) As String
         Dim ConMSGSplit() As String
-        'ContractID;NewBid;UserID;UserName
-        ' 0           1      2        3
+        'ContractID;NewBid
+        ' 0           1   
         ConMSGSplit = ConMSG.Split(";")
-        ToConsole("Oh fuck time to add a bid AAAAAAAAAAAAAA")
+        ToConsole("Ok time to add a bid AAAAAAAAAAAAAA")
 
         If Not File.Exists(String.Concat(UMSWEB_DIR, "\SSH\Contracts.txt")) Then
             Return "E"
@@ -188,8 +170,8 @@ Public Class Contractus
                 If ConMSGSplit(1) < CurrentLine(4) Or CurrentLine(4) = -1 Then
 
                     CurrentLine(4) = ConMSGSplit(1)
-                    CurrentLine(5) = ConMSGSplit(2)
-                    CurrentLine(6) = ConMSGSplit(3)
+                    CurrentLine(5) = VUser.ID
+                    CurrentLine(6) = VUser.Username
 
                 Else
                     ToConsole("Looks like this bid isn't less, so I cannot do.")
@@ -221,10 +203,10 @@ Public Class Contractus
     ''' </summary>
     ''' <param name="ConMSGSplit"></param>
     ''' <returns></returns>
-    Private Shared Function MoveToUser(ConMSGSplit() As String) As String
+    Private Function MoveToUser(ByRef VUser As ViBEUser, ConMSGSplit() As String) As String
         'ContractID;User
         ' 0           1
-        ToConsole("Oh fuck time to add a bid AAAAAAAAAAAAAA")
+        ToConsole("Ok time to add a bid AAAAAAAAAAAAAA")
 
         If Not File.Exists(String.Concat(UMSWEB_DIR, "\SSH\Contracts.txt")) Then
             Return "E"
@@ -243,11 +225,18 @@ Public Class Contractus
             ' 0  1      2     3        4        5          6
 
             If CurrentLine(0) = ConMSGSplit(0) Then
-                woops = False
-                ToConsole("Found it")
-                TransferedContract = CurrentLine
+
+                If CurrentLine(2) = VUser.ID Then
+                    woops = False
+                    ToConsole("Found it")
+                    TransferedContract = CurrentLine
+                Else
+                    ToConsole("Found it, but the user executing this call does not have authority to move it", ConsoleColor.DarkRed)
+
+                End If
+
             Else
-                PrintLine(2, String.Join("~", CurrentLine))
+                    PrintLine(2, String.Join("~", CurrentLine))
             End If
         End While
         FileClose(1)
@@ -274,24 +263,19 @@ Public Class Contractus
 
     End Function
 
-    ''' <summary>
-    ''' Removes a contract
-    ''' </summary>
-    ''' <param name="ConMSGSplit"></param>
-    ''' <returns></returns>
-    Private Shared Function RemoveContract(ConMSGSplit() As String) As String
-        'ContractID;User
-        ' 0           1
-        ToConsole("Oh fuck time to add a bid AAAAAAAAAAAAAA")
+    ''' <summary> Removes a contract</summary>
+    Private Function RemoveContract(ByRef VUser As ViBEUser, ContractID As Integer) As String
+        'ContractID
+        ' 0        
 
-        If Not File.Exists(String.Concat(UMSWEB_DIR, "\SSH\Users\" & ConMSGSplit(1) & "\Contracts.txt")) Then
+        If Not File.Exists(VUser.Directory & "Contracts.txt") Then
             Return "E"
         End If
 
-        ToConsole("Trying to Find Contract #" & ConMSGSplit(0))
+        ToConsole("Trying to Find Contract #" & ContractID)
 
-        FileOpen(1, String.Concat(UMSWEB_DIR, "\SSH\Users\" & ConMSGSplit(1) & "\Contracts.txt"), OpenMode.Input)
-        FileOpen(2, String.Concat(UMSWEB_DIR, "\SSH\Users\" & ConMSGSplit(1) & "\TempContracts.txt"), OpenMode.Output)
+        FileOpen(1, VUser.Directory & "Contracts.txt", OpenMode.Input)
+        FileOpen(2, VUser.Directory & "TempContracts.txt", OpenMode.Output)
         Dim CurrentLine() As String
         Dim woops As Boolean = True
         While Not EOF(1)
@@ -299,7 +283,7 @@ Public Class Contractus
             'ID~Name~FromID~FromNAME~TopBid~TopBidID~TopBidNAME
             ' 0  1      2     3        4        5          6
 
-            If CurrentLine(0) = ConMSGSplit(0) Then
+            If CurrentLine(0) = ContractID Then
                 woops = False
                 ToConsole("Found it, not copying it")
             Else
@@ -310,13 +294,13 @@ Public Class Contractus
         FileClose(2)
 
         If woops Then
-            File.Delete(String.Concat(UMSWEB_DIR, "\SSH\Users" & ConMSGSplit(1) & "\TempContracts.txt"))
+            File.Delete(VUser.Directory & "TempContracts.txt")
             Return "E"
         Else
-            File.Delete(String.Concat(UMSWEB_DIR, "\SSH\Users\" & ConMSGSplit(1) & "\Contracts.txt"))
-            File.Move(String.Concat(UMSWEB_DIR, "\SSH\Users\" & ConMSGSplit(1) & "\TempContracts.txt"), String.Concat(UMSWEB_DIR, "\SSH\Users\" & ConMSGSplit(1) & "\Contracts.txt"))
+            File.Delete(VUser.Directory & "Contracts.txt")
+            File.Move(VUser.Directory & "TempContracts.txt", VUser.Directory & "Contracts.txt")
             ToConsole("OK we should be good to go")
             Return "S"
         End If
     End Function
-End Class
+End Module
