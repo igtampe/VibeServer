@@ -33,9 +33,9 @@ Public Class ViBEExtension
             'We couldn't find him :(
             Return "E"
 
-        ElseIf Command.StartsWith("CERT") Then
+        ElseIf ClientMSG.StartsWith("CERT") Then
             'CERT
-            Return Certify(Command.Remove(0, 4))
+            Return Certify(ClientMSG.Remove(0, 4))
 
         End If
 

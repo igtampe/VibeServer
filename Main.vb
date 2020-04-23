@@ -137,7 +137,7 @@ Public Module Main
         Dim Result As String
 
         'Attempt parsing with Non-Authenticated extensions
-        For Each SmokeSignal As ISmokeSignalAuthenticatedExtension In Extensions
+        For Each SmokeSignal As ISmokeSignalExtension In Extensions
             Try
                 Result = SmokeSignal.Parse(ClientMSG)
                 If Not String.IsNullOrEmpty(Result) Then Return Result
