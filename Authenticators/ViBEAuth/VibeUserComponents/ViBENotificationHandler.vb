@@ -12,11 +12,15 @@ Public Class ViBENotificationHandler
 
         AllNotifs = New ArrayList
 
-        FileOpen(1, NotifFile, OpenMode.Input)
+        If Not File.Exists(NotifFile) Then Return
 
-        While Not EOF(1)
-            AllNotifs.Add(New ViBENotification(LineInput(1)))
+        FileOpen(100, NotifFile, OpenMode.Input)
+
+        While Not EOF(100)
+            AllNotifs.Add(New ViBENotification(LineInput(100)))
         End While
+
+        FileClose(100)
 
     End Sub
 

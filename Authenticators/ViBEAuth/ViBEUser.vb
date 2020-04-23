@@ -85,7 +85,7 @@ Public Class ViBEUser
         If UserType.Category = ViBEUserType.ViBECategory.Corporate Then RString &= " (Corp.)"
         If UserType.Category = ViBEUserType.ViBECategory.Government Then RString &= " (Gov.)"
 
-        Return ID & ": " & Username
+        Return ID & ": " & Username & RString
 
     End Function
 

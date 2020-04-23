@@ -89,7 +89,7 @@ Public Class ViBEExtension
 
         ElseIf Command.StartsWith("EZT") Then
             'EzTax
-            Return EZT(Command.Remove(0, 3))
+            Return EZT(VUser, Command.Remove(0, 3))
 
         ElseIf Command.StartsWith("CON") Then
             'Contractus

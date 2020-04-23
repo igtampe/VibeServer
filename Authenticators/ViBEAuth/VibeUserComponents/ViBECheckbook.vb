@@ -13,12 +13,15 @@ Public Class ViBECheckbook
 
         AllItems = New ArrayList
 
-        FileOpen(1, CheckFile, OpenMode.Input)
+        If Not File.Exists(CheckFile) Then Return
 
-        While Not EOF(1)
-            AllItems.Add(New ViBECheckbookItem(LineInput(1)))
+        FileOpen(100, CheckFile, OpenMode.Input)
+
+        While Not EOF(100)
+            AllItems.Add(New ViBECheckbookItem(LineInput(100)))
         End While
 
+        FileClose(100)
     End Sub
 
     Public Sub AddItem(Message As String)

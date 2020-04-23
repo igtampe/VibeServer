@@ -2,7 +2,7 @@
 Imports System.Collections
 
 Public Class LBL
-    Implements SmokeSignalExtension
+    Implements ISmokeSignalExtension
 
     ''' <summary>
     ''' The name of the extension
@@ -33,11 +33,11 @@ Public Class LBL
         End If
     End Sub
 
-    Public Sub Tick() Implements SmokeSignalExtension.Tick
+    Public Sub Tick() Implements ISmokeSignalExtension.Tick
         'do nada
     End Sub
 
-    Public Function Parse(Command As String) As String Implements SmokeSignalExtension.Parse
+    Public Function Parse(Command As String) As String Implements ISmokeSignalExtension.Parse
         'LBL:START:57174.IncomeRegistry.CSV
         Try
             If Command.StartsWith("LBL:") Then
@@ -219,11 +219,11 @@ Public Class LBL
         Return Nothing
     End Function
 
-    Public Function getName() As String Implements SmokeSignalExtension.getName
+    Public Function getName() As String Implements ISmokeSignalExtension.GetName
         Return EXTENSION_NAME
     End Function
 
-    Public Function getVersion() As String Implements SmokeSignalExtension.getVersion
+    Public Function getVersion() As String Implements ISmokeSignalExtension.GetVersion
         Return EXTENSION_VERS
     End Function
 

@@ -12,7 +12,7 @@ Public Module Main
     Public Authenticator As ISmokeSignalAuthenticator
 
     ''' <summary>All Registered SmokeSignal Non-Authenticated Extensions</summary>
-    Public Extensions As ISmokeSignalAuthenticatedExtension()
+    Public Extensions As ISmokeSignalExtension()
 
     ''' <summary>All Registered SmokeSignal Authenticated Extensions</summary>
     Public AuthenticatedExtensions As ISmokeSignalAuthenticatedExtension()
